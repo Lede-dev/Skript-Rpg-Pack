@@ -1,0 +1,65 @@
+
+
+
+
+#========================================================================================================
+	
+#=============================================================
+#스텟 GUI의 이름을 반환
+function rpp_StatGUI_GetName() :: string:
+	return "스텟"
+	
+#스텟 GUI의 신속 스텟 아이콘 이름을 반환
+function rpp_StatGUI_Sft_GetIcon_GetName() :: string:
+	return "&e[ &f신속 &e]"
+	
+#스텟 GUI의 치명 스텟 아이콘 이름을 반환
+function rpp_StatGUI_Ftl_GetIcon_GetName() :: string:
+	return "&e[ &f치명 &e]"
+	
+#스텟 GUI의 인내 스텟 아이콘 이름을 반환
+function rpp_StatGUI_Ptn_GetIcon_GetName() :: string:
+	return "&e[ &f인내 &e]"
+	
+#스텟 GUI의 숙련 스텟 아이콘 이름을 반환
+function rpp_StatGUI_Skl_GetIcon_GetName() :: string:
+	return "&e[ &f숙련 &e]"
+	
+#스텟 GUI의 제압 스텟 아이콘 이름을 반환
+function rpp_StatGUI_Spr_GetIcon_GetName() :: string:
+	return "&e[ &f제압 &e]"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
