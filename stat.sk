@@ -834,17 +834,425 @@ function rpp_GetMaxDePI() :: number:
 
 #========================================================================================================
 
+#신속 스텟 체력 증가 활성화 상태 반환
+function rpp_GetState_Sft_Hp() :: boolean:
+	return {@Sft_State_Hp}
 
+#신속 스텟 체력 재생 증가 활성화 상태 반환
+function rpp_GetState_Sft_HpR() :: boolean:
+	return {@Sft_State_HpR}
 
+#신속 스텟 공격력 증가 활성화 상태 반환
+function rpp_GetState_Sft_Atk() :: boolean:
+	return {@Sft_State_Atk}
 
+#신속 스텟 방어력 증가 활성화 상태 반환
+function rpp_GetState_Sft_Def() :: boolean:
+	return {@Sft_State_Def}
 
+#신속 스텟 이동속도 증가 활성화 상태 반환
+function rpp_GetState_Sft_Spd() :: boolean:
+	return {@Sft_State_Spd}
 
+#신속 스텟 치명타 확률 증가 활성화 상태 반환
+function rpp_GetState_Sft_CrC() :: boolean:
+	return {@Sft_State_CrC}
 
+#신속 스텟 치명타 데미지 증가 활성화 상태 반환
+function rpp_GetState_Sft_CrD() :: boolean:
+	return {@Sft_State_CrD}
 
+#신속 스텟 방어력 관통 증가 활성화 상태 반환
+function rpp_GetState_Sft_DeP() :: boolean:
+	return {@Sft_State_DeP}
 
+#신속 스텟 치명타 저항 활성화 상태 반환
+function rpp_GetState_Sft_CrCI() :: boolean:
+	return {@Sft_State_CrCI}
 
+#신속 스텟 방어력 관통 저항 활성화 상태 반환
+function rpp_GetState_Sft_DePI() :: boolean:
+	return {@Sft_State_DePI}
 
+#=============================================================
 
+#신속 스텟 체력 증가 비율 반환
+function rpp_GetEff_Sft_Hp() :: number:
+	return {@Sft_Eff_Hp}
+
+#신속 스텟 체력 재생 증가 비율 반환
+function rpp_GetEff_Sft_HpR() :: number:
+	return {@Sft_Eff_HpR}
+
+#신속 스텟 공격력 증가 비율 반환
+function rpp_GetEff_Sft_Atk() :: number:
+	return {@Sft_Eff_Atk}
+
+#신속 스텟 방어력 증가 비율 반환
+function rpp_GetEff_Sft_Def() :: number:
+	return {@Sft_Eff_Def}
+
+#신속 스텟 이동속도 증가 비율 반환
+function rpp_GetEff_Sft_Spd() :: number:
+	return {@Sft_Eff_Spd}
+
+#신속 스텟 치명타 확률 증가 비율 반환
+function rpp_GetEff_Sft_CrC() :: number:
+	return {@Sft_Eff_CrC}
+
+#신속 스텟 치명타 데미지 증가 비율 반환
+function rpp_GetEff_Sft_CrD() :: number:
+	return {@Sft_Eff_CrD}
+
+#신속 스텟 방어력 관통 증가 비율 반환
+function rpp_GetEff_Sft_DeP() :: number:
+	return {@Sft_Eff_DeP}
+
+#신속 스텟 치명타 저항 증가 비율 반환
+function rpp_GetEff_Sft_CrCI() :: number:
+	return {@Sft_Eff_CrCI}
+
+#신속 스텟 방어력 관통 저항 비율 반환
+function rpp_GetEff_Sft_DePI() :: number:
+	return {@Sft_Eff_DePI}
+
+#========================================================================================================
+
+#치명 스텟 체력 증가 활성화 상태 반환
+function rpp_GetState_Ftl_Hp() :: boolean:
+	return {@Ftl_State_Hp}
+
+#치명 스텟 체력 재생 증가 활성화 상태 반환
+function rpp_GetState_Ftl_HpR() :: boolean:
+	return {@Ftl_State_HpR}
+
+#치명 스텟 공격력 증가 활성화 상태 반환
+function rpp_GetState_Ftl_Atk() :: boolean:
+	return {@Ftl_State_Atk}
+
+#치명 스텟 방어력 증가 활성화 상태 반환
+function rpp_GetState_Ftl_Def() :: boolean:
+	return {@Ftl_State_Def}
+
+#치명 스텟 이동속도 증가 활성화 상태 반환
+function rpp_GetState_Ftl_Spd() :: boolean:
+	return {@Ftl_State_Spd}
+
+#치명 스텟 치명타 확률 증가 활성화 상태 반환
+function rpp_GetState_Ftl_CrC() :: boolean:
+	return {@Ftl_State_CrC}
+
+#치명 스텟 치명타 데미지 증가 활성화 상태 반환
+function rpp_GetState_Ftl_CrD() :: boolean:
+	return {@Ftl_State_CrD}
+
+#치명 스텟 방어력 관통 증가 활성화 상태 반환
+function rpp_GetState_Ftl_DeP() :: boolean:
+	return {@Ftl_State_DeP}
+
+#치명 스텟 치명타 저항 활성화 상태 반환
+function rpp_GetState_Ftl_CrCI() :: boolean:
+	return {@Ftl_State_CrCI}
+
+#치명 스텟 방어력 관통 저항 활성화 상태 반환
+function rpp_GetState_Ftl_DePI() :: boolean:
+	return {@Ftl_State_DePI}
+
+#=============================================================
+
+#치명 스텟 체력 증가 비율 반환
+function rpp_GetEff_Ftl_Hp() :: number:
+	return {@Ftl_Eff_Hp}
+
+#치명 스텟 체력 재생 증가 비율 반환
+function rpp_GetEff_Ftl_HpR() :: number:
+	return {@Ftl_Eff_HpR}
+
+#치명 스텟 공격력 증가 비율 반환
+function rpp_GetEff_Ftl_Atk() :: number:
+	return {@Ftl_Eff_Atk}
+
+#치명 스텟 방어력 증가 비율 반환
+function rpp_GetEff_Ftl_Def() :: number:
+	return {@Ftl_Eff_Def}
+
+#치명 스텟 이동속도 증가 비율 반환
+function rpp_GetEff_Ftl_Spd() :: number:
+	return {@Ftl_Eff_Spd}
+
+#치명 스텟 치명타 확률 증가 비율 반환
+function rpp_GetEff_Ftl_CrC() :: number:
+	return {@Ftl_Eff_CrC}
+
+#치명 스텟 치명타 데미지 증가 비율 반환
+function rpp_GetEff_Ftl_CrD() :: number:
+	return {@Ftl_Eff_CrD}
+
+#치명 스텟 방어력 관통 증가 비율 반환
+function rpp_GetEff_Ftl_DeP() :: number:
+	return {@Ftl_Eff_DeP}
+
+#치명 스텟 치명타 저항 증가 비율 반환
+function rpp_GetEff_Ftl_CrCI() :: number:
+	return {@Ftl_Eff_CrCI}
+
+#치명 스텟 방어력 관통 저항 비율 반환
+function rpp_GetEff_Ftl_DePI() :: number:
+	return {@Ftl_Eff_DePI}
+
+#========================================================================================================
+
+#인내 스텟 체력 증가 활성화 상태 반환
+function rpp_GetState_Ptn_Hp() :: boolean:
+	return {@Ptn_State_Hp}
+
+#인내 스텟 체력 재생 증가 활성화 상태 반환
+function rpp_GetState_Ptn_HpR() :: boolean:
+	return {@Ptn_State_HpR}
+
+#인내 스텟 공격력 증가 활성화 상태 반환
+function rpp_GetState_Ptn_Atk() :: boolean:
+	return {@Ptn_State_Atk}
+
+#인내 스텟 방어력 증가 활성화 상태 반환
+function rpp_GetState_Ptn_Def() :: boolean:
+	return {@Ptn_State_Def}
+
+#인내 스텟 이동속도 증가 활성화 상태 반환
+function rpp_GetState_Ptn_Spd() :: boolean:
+	return {@Ptn_State_Spd}
+
+#인내 스텟 치명타 확률 증가 활성화 상태 반환
+function rpp_GetState_Ptn_CrC() :: boolean:
+	return {@Ptn_State_CrC}
+
+#인내 스텟 치명타 데미지 증가 활성화 상태 반환
+function rpp_GetState_Ptn_CrD() :: boolean:
+	return {@Ptn_State_CrD}
+
+#인내 스텟 방어력 관통 증가 활성화 상태 반환
+function rpp_GetState_Ptn_DeP() :: boolean:
+	return {@Ptn_State_DeP}
+
+#인내 스텟 치명타 저항 활성화 상태 반환
+function rpp_GetState_Ptn_CrCI() :: boolean:
+	return {@Ptn_State_CrCI}
+
+#인내 스텟 방어력 관통 저항 활성화 상태 반환
+function rpp_GetState_Ptn_DePI() :: boolean:
+	return {@Ptn_State_DePI}
+
+#=============================================================
+
+#인내 스텟 체력 증가 비율 반환
+function rpp_GetEff_Ptn_Hp() :: number:
+	return {@Ptn_Eff_Hp}
+
+#인내 스텟 체력 재생 증가 비율 반환
+function rpp_GetEff_Ptn_HpR() :: number:
+	return {@Ptn_Eff_HpR}
+
+#인내 스텟 공격력 증가 비율 반환
+function rpp_GetEff_Ptn_Atk() :: number:
+	return {@Ptn_Eff_Atk}
+
+#인내 스텟 방어력 증가 비율 반환
+function rpp_GetEff_Ptn_Def() :: number:
+	return {@Ptn_Eff_Def}
+
+#인내 스텟 이동속도 증가 비율 반환
+function rpp_GetEff_Ptn_Spd() :: number:
+	return {@Ptn_Eff_Spd}
+
+#인내 스텟 치명타 확률 증가 비율 반환
+function rpp_GetEff_Ptn_CrC() :: number:
+	return {@Ptn_Eff_CrC}
+
+#인내 스텟 치명타 데미지 증가 비율 반환
+function rpp_GetEff_Ptn_CrD() :: number:
+	return {@Ptn_Eff_CrD}
+
+#인내 스텟 방어력 관통 증가 비율 반환
+function rpp_GetEff_Ptn_DeP() :: number:
+	return {@Ptn_Eff_DeP}
+
+#인내 스텟 치명타 저항 증가 비율 반환
+function rpp_GetEff_Ptn_CrCI() :: number:
+	return {@Ptn_Eff_CrCI}
+
+#인내 스텟 방어력 관통 저항 비율 반환
+function rpp_GetEff_Ptn_DePI() :: number:
+	return {@Ptn_Eff_DePI}
+
+#========================================================================================================
+
+#숙련 스텟 체력 증가 활성화 상태 반환
+function rpp_GetState_Skl_Hp() :: boolean:
+	return {@Skl_State_Hp}
+
+#숙련 스텟 체력 재생 증가 활성화 상태 반환
+function rpp_GetState_Skl_HpR() :: boolean:
+	return {@Skl_State_HpR}
+
+#숙련 스텟 공격력 증가 활성화 상태 반환
+function rpp_GetState_Skl_Atk() :: boolean:
+	return {@Skl_State_Atk}
+
+#숙련 스텟 방어력 증가 활성화 상태 반환
+function rpp_GetState_Skl_Def() :: boolean:
+	return {@Skl_State_Def}
+
+#숙련 스텟 이동속도 증가 활성화 상태 반환
+function rpp_GetState_Skl_Spd() :: boolean:
+	return {@Skl_State_Spd}
+
+#숙련 스텟 치명타 확률 증가 활성화 상태 반환
+function rpp_GetState_Skl_CrC() :: boolean:
+	return {@Skl_State_CrC}
+
+#숙련 스텟 치명타 데미지 증가 활성화 상태 반환
+function rpp_GetState_Skl_CrD() :: boolean:
+	return {@Skl_State_CrD}
+
+#숙련 스텟 방어력 관통 증가 활성화 상태 반환
+function rpp_GetState_Skl_DeP() :: boolean:
+	return {@Skl_State_DeP}
+
+#숙련 스텟 치명타 저항 활성화 상태 반환
+function rpp_GetState_Skl_CrCI() :: boolean:
+	return {@Skl_State_CrCI}
+
+#숙련 스텟 방어력 관통 저항 활성화 상태 반환
+function rpp_GetState_Skl_DePI() :: boolean:
+	return {@Skl_State_DePI}
+
+#=============================================================
+
+#숙련 스텟 체력 증가 비율 반환
+function rpp_GetEff_Skl_Hp() :: number:
+	return {@Skl_Eff_Hp}
+
+#숙련 스텟 체력 재생 증가 비율 반환
+function rpp_GetEff_Skl_HpR() :: number:
+	return {@Skl_Eff_HpR}
+
+#숙련 스텟 공격력 증가 비율 반환
+function rpp_GetEff_Skl_Atk() :: number:
+	return {@Skl_Eff_Atk}
+
+#숙련 스텟 방어력 증가 비율 반환
+function rpp_GetEff_Skl_Def() :: number:
+	return {@Skl_Eff_Def}
+
+#숙련 스텟 이동속도 증가 비율 반환
+function rpp_GetEff_Skl_Spd() :: number:
+	return {@Skl_Eff_Spd}
+
+#숙련 스텟 치명타 확률 증가 비율 반환
+function rpp_GetEff_Skl_CrC() :: number:
+	return {@Skl_Eff_CrC}
+
+#숙련 스텟 치명타 데미지 증가 비율 반환
+function rpp_GetEff_Skl_CrD() :: number:
+	return {@Skl_Eff_CrD}
+
+#숙련 스텟 방어력 관통 증가 비율 반환
+function rpp_GetEff_Skl_DeP() :: number:
+	return {@Skl_Eff_DeP}
+
+#숙련 스텟 치명타 저항 증가 비율 반환
+function rpp_GetEff_Skl_CrCI() :: number:
+	return {@Skl_Eff_CrCI}
+
+#숙련 스텟 방어력 관통 저항 비율 반환
+function rpp_GetEff_Skl_DePI() :: number:
+	return {@Skl_Eff_DePI}
+
+#========================================================================================================
+
+#제압 스텟 체력 증가 활성화 상태 반환
+function rpp_GetState_Spr_Hp() :: boolean:
+	return {@Spr_State_Hp}
+
+#제압 스텟 체력 재생 증가 활성화 상태 반환
+function rpp_GetState_Spr_HpR() :: boolean:
+	return {@Spr_State_HpR}
+
+#제압 스텟 공격력 증가 활성화 상태 반환
+function rpp_GetState_Spr_Atk() :: boolean:
+	return {@Spr_State_Atk}
+
+#제압 스텟 방어력 증가 활성화 상태 반환
+function rpp_GetState_Spr_Def() :: boolean:
+	return {@Spr_State_Def}
+
+#제압 스텟 이동속도 증가 활성화 상태 반환
+function rpp_GetState_Spr_Spd() :: boolean:
+	return {@Spr_State_Spd}
+
+#제압 스텟 치명타 확률 증가 활성화 상태 반환
+function rpp_GetState_Spr_CrC() :: boolean:
+	return {@Spr_State_CrC}
+
+#제압 스텟 치명타 데미지 증가 활성화 상태 반환
+function rpp_GetState_Spr_CrD() :: boolean:
+	return {@Spr_State_CrD}
+
+#제압 스텟 방어력 관통 증가 활성화 상태 반환
+function rpp_GetState_Spr_DeP() :: boolean:
+	return {@Spr_State_DeP}
+
+#제압 스텟 치명타 저항 활성화 상태 반환
+function rpp_GetState_Spr_CrCI() :: boolean:
+	return {@Spr_State_CrCI}
+
+#제압 스텟 방어력 관통 저항 활성화 상태 반환
+function rpp_GetState_Spr_DePI() :: boolean:
+	return {@Spr_State_DePI}
+
+#=============================================================
+
+#제압 스텟 체력 증가 비율 반환
+function rpp_GetEff_Spr_Hp() :: number:
+	return {@Spr_Eff_Hp}
+
+#제압 스텟 체력 재생 증가 비율 반환
+function rpp_GetEff_Spr_HpR() :: number:
+	return {@Spr_Eff_HpR}
+
+#제압 스텟 공격력 증가 비율 반환
+function rpp_GetEff_Spr_Atk() :: number:
+	return {@Spr_Eff_Atk}
+
+#제압 스텟 방어력 증가 비율 반환
+function rpp_GetEff_Spr_Def() :: number:
+	return {@Spr_Eff_Def}
+
+#제압 스텟 이동속도 증가 비율 반환
+function rpp_GetEff_Spr_Spd() :: number:
+	return {@Spr_Eff_Spd}
+
+#제압 스텟 치명타 확률 증가 비율 반환
+function rpp_GetEff_Spr_CrC() :: number:
+	return {@Spr_Eff_CrC}
+
+#제압 스텟 치명타 데미지 증가 비율 반환
+function rpp_GetEff_Spr_CrD() :: number:
+	return {@Spr_Eff_CrD}
+
+#제압 스텟 방어력 관통 증가 비율 반환
+function rpp_GetEff_Spr_DeP() :: number:
+	return {@Spr_Eff_DeP}
+
+#제압 스텟 치명타 저항 증가 비율 반환
+function rpp_GetEff_Spr_CrCI() :: number:
+	return {@Spr_Eff_CrCI}
+
+#제압 스텟 방어력 관통 저항 비율 반환
+function rpp_GetEff_Spr_DePI() :: number:
+	return {@Spr_Eff_DePI}
+
+#========================================================================================================
 
 
 
