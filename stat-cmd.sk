@@ -1,0 +1,94 @@
+
+#플레이어의 정보를 출력합니다.
+command /rpp.print.PlayerInfo [<offlineplayer>]:
+	permission: rpp.command.print
+	trigger:
+		if arg 1 is not set:
+			if sender is console:
+				send "&c플레이어를 입력해주세요."
+				send "&c/rpp.print.PlayerInfo <Player>"
+			else:
+				set {_first} to rpp_TimeFormatted(rpp_GetFirstJoin(player))
+				set {_last} to rpp_TimeFormatted(rpp_GetLastJoin(player))
+				set {_play} to rpp_GetPlayTime(player)
+				send "&e플레이어 &6%player%&e의 정보"
+				send " &e- 최초 접속 시간 : &b%{_first}%"
+				send " &e- 마지막 접속 시간 : &b%{_last}%"
+				send " &e- 퇴장 시간 : &bONLINE"
+				send " &e- 플레이 타임 : &b%{_play}%"				
+		else if arg 1 is set:
+			if rpp_IsPlayed(arg 1) is not true:
+				send "%arg 1%"
+				send "&c플레이어의 접속 기록이 존재하지 않습니다."
+				stop
+			set {_first} to rpp_TimeFormatted(rpp_GetFirstJoin(arg 1))
+			set {_last} to rpp_TimeFormatted(rpp_GetLastJoin(arg 1))
+			set {_quit} to rpp_TimeFormatted(rpp_GetQuit(arg 1))
+			set {_play} to rpp_GetPlayTime(arg 1)
+			if arg 1 is online:
+				set {_quit} to "ONLINE"
+			send "&e플레이어 &6%arg 1%&e의 정보"
+			send " &e- 최초 접속 시간 : &b%{_first}%"
+			send " &e- 마지막 접속 시간 : &b%{_last}%"
+			send " &e- 퇴장 시간 : &b%{_quit}%"
+			send " &e- 플레이 타임 : &b%{_play}%"
+			
+
+#모든 레벨업 요구 경험치량을 출력합니다.
+command /rpp.print.levelUpExp:
+	permission: rpp.command.print
+	trigger:
+		set {_exp::*} to rpp_GetVar_ExpSystem()
+		set {_count} to 0
+		loop {_exp::*}:
+			send "&e%{_count}% -> %{_count}+1% : %loop-value%"
+			add 1 to {_count}
+
+#경험치 시스템을 리로드합니다.
+command /rpp.reload.Exp:
+	permission: rpp.command.reload
+	trigger:
+		rpp_Reload_ExpSystem()
+		set {_stat} to rpp_GetLevelUpPoint()
+		set {_exp} to rpp_GetLevelUpExp()
+		set {_rate} to rpp_GetLevelUpExpRate()
+		set {_rate} to rpp_ConvertRate({_rate})
+		set {_max} to rpp_GetMaxLevel()
+		send "&e경험치 시스템 리로드 완료. 다음 항목들을 재설정하였습니다."
+		send " &e- 레벨업 스텟포인트 : &b%{_stat}%"
+		send " &e- 최초 레벨업 요구 경험치 : &b%{_exp}%"
+		send " &e- 레벨업 요구 경험치 증가 비율 : &b%{_rate}%%%"
+		send " &e- 최대 레벨 : &b%{_max}%"
+		send ""
+		send "&e레벨업 스텟포인트가 변경되었다면 다음 명령어를 이용하여 플레이어의 스텟을 초기화하고, 스텟포인트를 다시 지급해주세요"
+		send "&e/rpp.debug.PlayerStat"
+
+#플레이어가 직접 투자한 스텟을 경험치 시스템과 비교하여 재설정합니다.		
+command /rpp.debug.PlayerStat:
+	permission: rpp.command.debug
+	trigger:
+		send "&e플레이어가 직접 투자한 스텟을 초기화하고, 스텟포인트를 지급합니다."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

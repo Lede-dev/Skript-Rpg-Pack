@@ -1,0 +1,104 @@
+
+
+#플레이어를 접속한 플레이어 목록에 추가합니다.
+function rpp_addPlayerToPlayerList(p:offlineplayer):
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerList::%{_uuid}%} to {_p}
+	
+#서버에 한번이라도 접속한 플레이어의 목록을 반환합니다.
+function rpp_GetPlayerList() :: offlineplayers:
+	set {_id} to rpp_GetID_U()
+	return {%{_id}%.PlayerList::*}
+	
+#서버에 한번이라도 접속한 플레이어의 UUID 목록을 반환합니다.
+function rpp_GetUUIDList() :: strings:
+	set {_id} to rpp_GetID_U()
+	loop {%{_id}%.PlayerList::*}:
+		add loop-index to {_uuid::*}
+	return {_uuid::*}
+	
+#플레이어가 서버에 최초 접속한 시간을 저장합니다.
+function rpp_SetFirstJoin(p:offlineplayer):
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.FirstJoin::%{_uuid}%} to now
+
+#플레이어가 서버에 최초 접속한 시간을 반환합니다.
+function rpp_GetFirstJoin(p:offlineplayer) :: date:
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.FirstJoin::%{_uuid}%}
+	
+#플레이어의 최근 접속 시간을 저장합니다.
+function rpp_SetLastJoin(p:offlineplayer):
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.LastJoin::%{_uuid}%} to now #플레이어의 최근 접속 시간을 저장합니다.
+	
+#플레이어의 최근 접속 시간을 반환합니다.
+function rpp_GetLastJoin(p:offlineplayer) :: date:
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.LastJoin::%{_uuid}%} # 플레이어의 최근 접속 시간을 반환합니다.
+	
+#플레이어의 퇴장 시간을 저장합니다.
+function rpp_SetQuit(p:offlineplayer):
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.Quit::%{_uuid}%} to now
+
+#플레이어의 퇴장 시간을 반환합니다.
+function rpp_GetQuit(p:offlineplayer) :: date:
+	if {_p} is online: # 플레이어가 접속중이라면 현재 시간을 반환합니다.
+		return now
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.Quit::%{_uuid}%} # 플레이어의 퇴장 시간을 반환합니다.
+
+#플레이어의 플레이타임을 저장합니다.
+function rpp_SetPlayTime(p:offlineplayer):
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	set {_join} to rpp_GetLastJoin({_p}) 
+	set {_diff} to difference between {_join} and now
+	add {_diff} to {%{_id}%.PlayTime::%{_uuid}%}
+	
+#플레이어의 플레이타임을 반환합니다.
+function rpp_GetPlayTime(p:offlineplayer) :: timespan:
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	if {_p} is online: # 플레이어가 접속중이라면 현재 시간까지의 플레이타임을 반환
+		set {_join} to rpp_GetLastJoin({_p}) 
+		set {_diff} to difference between {_join} and now
+		set {_time} to {%{_id}%.PlayTime::%{_uuid}%}
+		add {_diff} to {_time}
+		return {_time}
+	return {%{_id}%.PlayTime::%{_uuid}%} # 플레이어가 오프라인이라면 설정된 플레이타임을 반환
+
+#플레이어의 접속 기록이 존재하는지 조회합니다.
+function rpp_IsPlayed(p:offlineplayer) :: boolean:
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	if {%{_id}%.FirstJoin::%{_uuid}%} is not set:
+		return true
+	return false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

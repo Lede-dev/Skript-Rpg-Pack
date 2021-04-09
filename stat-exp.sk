@@ -1,0 +1,21 @@
+
+#레벨업 요구 경험치 변수 반환
+function rpp_GetVar_ExpSystem() :: numbers:
+	set {_id} to rpp_GetID_S() # 변수 DB 저장 경로 로드
+	return {%{_id}%.LevelUpExp::*}
+
+
+#레벨 시스템 리로드
+function rpp_Reload_ExpSystem():
+	set {_id} to rpp_GetID_S() # 변수 DB 저장 경로 로드
+	set {_max} to rpp_GetMaxLevel() # 최대 레벨 로드
+	set {_exp} to rpp_GetLevelUpExp() # 최초 레벨업 경험치 로드
+	set {_rate} to rpp_GetLevelUpExpRate() # 레벨업 요구 경험치 증가량 로드
+	set {_rate} to rpp_ConvertRate({_rate}) # 로드한 증가량을 연산 가능한 값으로 변환
+	delete {%{_id}%.LevelUpExp::*} # 기존 경험치 변수 초기화
+	loop {_max} times: # 경험치 변수 재설정
+		add {_exp} to {%{_id}%.LevelUpExp::*}
+		set {_exp} to {_exp} + ({_exp} * {_rate})
+		
+		
+		

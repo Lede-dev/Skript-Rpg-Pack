@@ -1,0 +1,30 @@
+
+#스텟 목록
+#신속 - Sft
+#치명 - Ftl
+#인내 - Ptn
+#숙련 - Skl
+#제압 - Spr
+
+
+#플레이어의 전체 스텟포인트를 반환
+function rpp_GetStatPoint() :: number:
+	return 1
+
+#플레이어가 직접 투자한 스텟을 반환
+function rpp_GetPlayerStat(p:player, stat:string) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat.%{_uuid}%::%{_stat}%}
+
+#플레이어가 직접 투자한 스텟을 설정
+function rpp_SetPlayerStat(p:player, stat:string, value:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStat.%{_uuid}%::%{_stat}%} to {_value}
+	
+#플레이어가 직접 투자한 모든 스텟을 반환
+function rpp_GetAllPlayerStat(p:player) :: numbers:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat.%{_uuid}%::*}	

@@ -3,33 +3,258 @@
 
 
 #========================================================================================================
+#스텟 GUI를 반환	
+	
 	
 #=============================================================
 #스텟 GUI의 이름을 반환
-function rpp_StatGUI_GetName() :: string:
-	return "스텟"
+function rpp_StatGUI_GetTitle() :: string:
+	return rpp_GetStatGUI_Title()
 	
+#=============================================================	
+#스텟 GUI의 신속 스텟 아이콘을 반환
+function rpp_StatGUI_Sft_GetIcon() :: item:
+	set {_type} to rpp_StatGUI_Sft_GetIcon_GetType()
+	set {_name} to rpp_StatGUI_Sft_GetIcon_GetName()
+	set {_lore::*} to rpp_StatGUI_Sft_GetIcon_GetLore()
+	set {_icon} to {_type} named {_name}
+	set lore of {_icon} to {_lore::*}
+	return {_icon}
+
+#스텟 GUI의 신속 스텟 아이콘의 타입을 반환
+function rpp_StatGUI_Sft_GetIcon_GetType() :: item:
+	return rpp_GetStatGUI_Sft_Type()
+
 #스텟 GUI의 신속 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Sft_GetIcon_GetName() :: string:
-	return "&e[ &f신속 &e]"
+	set {_name} to rpp_GetStatGUI_Sft_Name()
+	return "%{_name}% [ &b$신속$ &e]" #플레이어의 현재 신속 값을 가져올 것
+	
+#스텟 GUI의 신속 스텟 아이콘 로어를 반환
+function rpp_StatGUI_Sft_GetIcon_GetLore() :: strings:
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	if rpp_GetState_Sft_Hp(): # 신속 스텟 체력 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
+	if rpp_GetState_Sft_HpR(): # 신속 스텟 체력 재생 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_Atk(): # 신속 스텟 공격력 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_Def(): # 신속 스텟 방어력 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_Spd(): # 신속 스텟 이동속도 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_CrC(): # 신속 스텟 치명타 확률 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_CrD(): # 신속 스텟 치명타 데미지 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_DeP(): # 신속 스텟 방어력 관통 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_CrCI(): # 신속 스텟 치명타 저항 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Sft_DePI(): # 신속 스텟 방어력 관통 저항 증가 상태가 true 일 때
+		add "   &f신속 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	return {_lore::*}
+
+#=============================================================	
+#스텟 GUI의 치명 스텟 아이콘을 반환
+function rpp_StatGUI_Ftl_GetIcon() :: item:
+	set {_type} to rpp_StatGUI_Ftl_GetIcon_GetType()
+	set {_name} to rpp_StatGUI_Ftl_GetIcon_GetName()
+	set {_lore::*} to rpp_StatGUI_Ftl_GetIcon_GetLore()
+	set {_icon} to {_type} named {_name}
+	set lore of {_icon} to {_lore::*}
+	return {_icon}
+
+#스텟 GUI의 치명 스텟 아이콘의 타입을 반환
+function rpp_StatGUI_Ftl_GetIcon_GetType() :: item:
+	return rpp_GetStatGUI_Ftl_Type()
 	
 #스텟 GUI의 치명 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Ftl_GetIcon_GetName() :: string:
-	return "&e[ &f치명 &e]"
+	set {_name} to rpp_GetStatGUI_Ftl_Name()
+	return "%{_name}% [ &b$치명$ &e]"
+	
+#스텟 GUI의 치명 스텟 아이콘 로어를 반환
+function rpp_StatGUI_Ftl_GetIcon_GetLore() :: strings:
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	if rpp_GetState_Ftl_Hp(): # 치명 스텟 체력 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
+	if rpp_GetState_Ftl_HpR(): # 치명 스텟 체력 재생 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_Atk(): # 치명 스텟 공격력 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_Def(): # 치명 스텟 방어력 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_Spd(): # 치명 스텟 이동속도 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_CrC(): # 치명 스텟 치명타 확률 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_CrD(): # 치명 스텟 치명타 데미지 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_DeP(): # 치명 스텟 방어력 관통 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_CrCI(): # 치명 스텟 치명타 저항 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ftl_DePI(): # 치명 스텟 방어력 관통 저항 증가 상태가 true 일 때
+		add "   &f치명 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	return {_lore::*}
+
+#=============================================================
+#스텟 GUI의 인내 스텟 아이콘을 반환
+function rpp_StatGUI_Ptn_GetIcon() :: item:
+	set {_type} to rpp_StatGUI_Ptn_GetIcon_GetType()
+	set {_name} to rpp_StatGUI_Ptn_GetIcon_GetName()
+	set {_lore::*} to rpp_StatGUI_Ptn_GetIcon_GetLore()
+	set {_icon} to {_type} named {_name}
+	set lore of {_icon} to {_lore::*}
+	return {_icon}
+
+#스텟 GUI의 인내 스텟 아이콘의 타입을 반환
+function rpp_StatGUI_Ptn_GetIcon_GetType() :: item:
+	return rpp_GetStatGUI_Ptn_Type()
 	
 #스텟 GUI의 인내 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Ptn_GetIcon_GetName() :: string:
-	return "&e[ &f인내 &e]"
+	set {_name} to rpp_GetStatGUI_Ptn_Name()
+	return "%{_name}% [ &b$인내$ &e]"
+	
+#스텟 GUI의 인내 스텟 아이콘 로어를 반환
+function rpp_StatGUI_Ptn_GetIcon_GetLore() :: strings:
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	if rpp_GetState_Ptn_Hp(): # 인내 스텟 체력 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
+	if rpp_GetState_Ptn_HpR(): # 인내 스텟 체력 재생 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_Atk(): # 인내 스텟 공격력 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_Def(): # 인내 스텟 방어력 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_Spd(): # 인내 스텟 이동속도 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_CrC(): # 인내 스텟 치명타 확률 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_CrD(): # 인내 스텟 치명타 데미지 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_DeP(): # 인내 스텟 방어력 관통 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_CrCI(): # 인내 스텟 치명타 저항 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Ptn_DePI(): # 인내 스텟 방어력 관통 저항 증가 상태가 true 일 때
+		add "   &f인내 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	return {_lore::*}
+
+#=============================================================	
+#스텟 GUI의 숙련 스텟 아이콘을 반환
+function rpp_StatGUI_Skl_GetIcon() :: item:
+	set {_type} to rpp_StatGUI_Skl_GetIcon_GetType()
+	set {_name} to rpp_StatGUI_Skl_GetIcon_GetName()
+	set {_lore::*} to rpp_StatGUI_Skl_GetIcon_GetLore()
+	set {_icon} to {_type} named {_name}
+	set lore of {_icon} to {_lore::*}
+	return {_icon}
+
+#스텟 GUI의 숙련 스텟 아이콘의 타입을 반환
+function rpp_StatGUI_Skl_GetIcon_GetType() :: item:
+	return rpp_GetStatGUI_Skl_Type()
 	
 #스텟 GUI의 숙련 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Skl_GetIcon_GetName() :: string:
-	return "&e[ &f숙련 &e]"
+	set {_name} to rpp_GetStatGUI_Skl_Name()
+	return "%{_name}% [ &b$숙련$ &e]"
+	
+#스텟 GUI의 숙련 스텟 아이콘 로어를 반환
+function rpp_StatGUI_Skl_GetIcon_GetLore() :: strings:
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	if rpp_GetState_Skl_Hp(): # 숙련 스텟 체력 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
+	if rpp_GetState_Skl_HpR(): # 숙련 스텟 체력 재생 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_Atk(): # 숙련 스텟 공격력 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_Def(): # 숙련 스텟 방어력 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_Spd(): # 숙련 스텟 이동속도 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_CrC(): # 숙련 스텟 치명타 확률 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_CrD(): # 숙련 스텟 치명타 데미지 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_DeP(): # 숙련 스텟 방어력 관통 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_CrCI(): # 숙련 스텟 치명타 저항 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Skl_DePI(): # 숙련 스텟 방어력 관통 저항 증가 상태가 true 일 때
+		add "   &f숙련 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	return {_lore::*}
+
+#=============================================================	
+#스텟 GUI의 제압 스텟 아이콘을 반환
+function rpp_StatGUI_Spr_GetIcon() :: item:
+	set {_type} to rpp_StatGUI_Spr_GetIcon_GetType()
+	set {_name} to rpp_StatGUI_Spr_GetIcon_GetName()
+	set {_lore::*} to rpp_StatGUI_Spr_GetIcon_GetLore()
+	set {_icon} to {_type} named {_name}
+	set lore of {_icon} to {_lore::*}
+	return {_icon}
+
+#스텟 GUI의 제압 스텟 아이콘의 타입을 반환
+function rpp_StatGUI_Spr_GetIcon_GetType() :: item:
+	return rpp_GetStatGUI_Spr_Type()
 	
 #스텟 GUI의 제압 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Spr_GetIcon_GetName() :: string:
-	return "&e[ &f제압 &e]"
+	set {_name} to rpp_GetStatGUI_Spr_Name()
+	return "%{_name}% [ &b$제압$ &e]"
 
-
+#스텟 GUI의 제압 스텟 아이콘 로어를 반환
+function rpp_StatGUI_Spr_GetIcon_GetLore() :: strings:
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	if rpp_GetState_Spr_Hp(): # 제압 스텟 체력 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*}# 스텟으로 적용된 체력 값을 가져올 것
+	if rpp_GetState_Spr_HpR(): # 제압 스텟 체력 재생 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_Atk(): # 제압 스텟 공격력 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_Def(): # 제압 스텟 방어력 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_Spd(): # 제압 스텟 이동속도 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_CrC(): # 제압 스텟 치명타 확률 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_CrD(): # 제압 스텟 치명타 데미지 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_DeP(): # 제압 스텟 방어력 관통 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_CrCI(): # 제압 스텟 치명타 저항 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+	if rpp_GetState_Spr_DePI(): # 제압 스텟 방어력 관통 저항 증가 상태가 true 일 때
+		add "   &f제압 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	return {_lore::*}
 
 
 
