@@ -62,13 +62,17 @@ command /rpp.reload.Exp:
 		send ""
 		send "&e레벨업 스텟포인트가 변경되었다면 다음 명령어를 이용하여 플레이어의 스텟을 초기화하고, 스텟포인트를 다시 지급해주세요"
 		send "&e/rpp.debug.PlayerStat"
+		send ""
+		send "&e레벨업 요구 경험치량은 다음 명령어를 이용하여 출력할 수 있습니다."
+		send "&e/rpp.print/levelUpExp"
+		send ""
 
 #플레이어가 직접 투자한 스텟을 경험치 시스템과 비교하여 재설정합니다.		
 command /rpp.debug.PlayerStat:
 	permission: rpp.command.debug
 	trigger:
-		send "&e플레이어가 직접 투자한 스텟을 초기화하고, 스텟포인트를 지급합니다."
-
+		send "&e플레이어가 직접 투자한 스텟을 초기화하고, 스텟포인트를 지급합니다. 자세한 결과는 콘솔을 확인해주세요."
+		rpp_ResetAllPlayerStat()
 
 
 

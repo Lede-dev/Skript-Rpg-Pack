@@ -18,4 +18,15 @@ function rpp_Reload_ExpSystem():
 		set {_exp} to {_exp} + ({_exp} * {_rate})
 		
 		
-		
+#플레이어 레벨 설정
+function rpp_SetPlayerLevel(p:offlineplayer, level:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerLevel::%{_uuid}%} to {_level}
+	set level of {_p} to {%{_id}%.PlayerLevel::%{_uuid}%}
+	
+#플레이어 레벨 반환
+function rpp_GetPlayerLevel(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerLevel::%{_uuid}%}
