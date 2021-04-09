@@ -3,6 +3,10 @@
 function rpp_ConvertRate(rate:number) :: number:
 	return {_rate} / 10000
 
+#옵션에 설정된 확률을 %확률로 변환
+function rpp_ConvertRateToPercent(rate:number) :: number:
+	return {_rate} / 100
+
 #Date 정보를 읽을 수 있도록 변환
 function rpp_TimeFormatted(d:date) :: string:
 	return {_d} formatted human-readable

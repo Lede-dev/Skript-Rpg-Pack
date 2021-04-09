@@ -52,7 +52,7 @@ command /rpp.reload.Exp:
 		set {_stat} to rpp_GetLevelUpPoint()
 		set {_exp} to rpp_GetLevelUpExp()
 		set {_rate} to rpp_GetLevelUpExpRate()
-		set {_rate} to rpp_ConvertRate({_rate})
+		set {_rate} to rpp_ConvertRateToPercent({_rate})
 		set {_max} to rpp_GetMaxLevel()
 		send "&e경험치 시스템 리로드 완료. 다음 항목들을 재설정하였습니다."
 		send " &e- 레벨업 스텟포인트 : &b%{_stat}%"

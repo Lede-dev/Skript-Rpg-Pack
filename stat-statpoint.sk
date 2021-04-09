@@ -1,0 +1,122 @@
+
+
+#모든 플레이어의 스텟 초기화
+function rpp_ResetAllPlayerStat():
+	set {_p::*} to rpp_GetPlayerList()
+	loop {_p::*}:
+		add 1 to {_count}
+		rpp_ResetPlayerStat(loop-value)
+	send "&a[RPG-Pack] 플레이어 &b%{_count}%&a명의 스텟 정보를 초기화 하였습니다." to console
+
+#플레이어 스텟 초기화
+function rpp_ResetPlayerStat(p:offlineplayer):
+	send "&e[RPG-Pack] 플레이어 &%{_p}%&e의 스텟 정보 초기화를 진행합니다.." to console
+	set {_level} to rpp_GetPlayerLevel({_p})
+	set {_levelUpPoint} to rpp_GetLevelUpPoint()
+	set {_point} to {_level} * {_levelUpPoint}
+	rpp_SetPlayerStatPoint({_p}, {_point}) # 보유중인 스텟 포인트를 해당 레벨에 얻을 수 있는 포인트의 총 합으로 설정
+	rpp_SetPlayerStat_Sft({_p}, 0) # 신속 포인트를 투자한 스텟 초기화
+	rpp_SetPlayerStat_Ftl({_p}, 0) # 치명
+	rpp_SetPlayerStat_Ptn({_p}, 0) # 인내
+	rpp_SetPlayerStat_Skl({_p}, 0) # 숙련
+	rpp_SetPlayerStat_Spr({_p}, 0) # 제압
+	
+#플레이어 스텟포인트 설정
+function rpp_SetPlayerStatPoint(p:offlineplayer, stat:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStatPoint::%{_uuid}%} to {_stat}
+
+
+#플레이어 스텟포인트 반환
+function rpp_GetPlayerStatPoint(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStatPoint::%{_uuid}%}
+	
+#스텟포인트로 상승한 플레이어 신속 스텟을 설정
+function rpp_SetPlayerStat_Sft(p:offlineplayer, stat:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStat_Sft::%{_uuid}%} to {_stat}
+
+#스텟포인트로 상승한 플레이어 신속 스텟을 반환
+function rpp_GetPlayerStat_Sft(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat_Sft::%{_uuid}%}
+
+#스텟포인트로 상승한 플레이어 치명 스텟을 설정
+function rpp_SetPlayerStat_Ftl(p:offlineplayer, stat:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStat_Ftl::%{_uuid}%} to {_stat}
+
+#스텟포인트로 상승한 플레이어 치명 스텟을 반환
+function rpp_GetPlayerStat_Ftl(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat_Ftl::%{_uuid}%}
+
+#스텟포인트로 상승한 플레이어 인내 스텟을 설정
+function rpp_SetPlayerStat_Ptn(p:offlineplayer, stat:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStat_Ptn::%{_uuid}%} to {_stat}
+
+#스텟포인트로 상승한 플레이어 인내 스텟을 반환
+function rpp_GetPlayerStat_Ptn(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat_Ptn::%{_uuid}%}
+
+#스텟포인트로 상승한 플레이어 숙련 스텟을 설정
+function rpp_SetPlayerStat_Skl(p:offlineplayer, stat:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStat_Skl::%{_uuid}%} to {_stat}
+
+#스텟포인트로 상승한 플레이어 숙련 스텟을 반환
+function rpp_GetPlayerStat_Skl(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat_Skl::%{_uuid}%}
+
+#스텟포인트로 상승한 플레이어 제압 스텟을 설정
+function rpp_SetPlayerStat_Spr(p:offlineplayer, stat:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerStat_Sp::%{_uuid}%} to {_stat}
+
+#스텟포인트로 상승한 플레이어 제압 스텟을 반환
+function rpp_GetPlayerStat_Spr(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerStat_Spr::%{_uuid}%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
