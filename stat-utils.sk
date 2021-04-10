@@ -18,15 +18,10 @@ function rpp_TimeFormattedToSeconds(t:timespan) :: number:
 	replace "days", "hours" and "minutes" with ":" in {_time}
 	set {_time::*} to {_time} split by ":"
 	set {_r::*} to rpp_Reversed({_time::*})
-	loop {_r::*}:
-		if loop-index is "1":
-			add round loop-value parsed as number to {_seconds}
-		else if loop-index is "2":
-			add loop-value parsed as number * 60 to {_seconds}
-		else if loop-index is "3":
-			add loop-value parsed as number * 3600 to {_seconds}
-		else if loop-index is "4":
-			add loop-value parsed as number * 86400 to {_seconds}
+	add round {_r::1} parsed as number to {_seconds}
+	add round {_r::2} parsed as number * 60 to {_seconds}
+	add round {_r::3} parsed as number * 3600 to {_seconds}
+	add round {_r::4} parsed as number * 86400 to {_seconds}
 	return {_seconds}
 	
 #배열을 역순으로 정렬

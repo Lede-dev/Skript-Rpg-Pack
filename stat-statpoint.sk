@@ -1,4 +1,18 @@
+#
+#
+# 스텟 업그레이드 방법
+#
+# 신속, 치명, 인내, 숙련, 제압 변경 함수를 호출
+# e.g.) rpp_SetPlayerStat_Sft(p:offlineplayer, stat:number)
+#
+# 이후, 스텟 업데이트 함수를 호출
+# e.g.) rpp_UpdateStat(p:offlineplayer)
+#
+# 5종 스텟 ADD 메서드 제작, 스텟포인트 최대치 제한 확인 및 메세지 출력
+#
 
+
+#========================================================================================================
 
 #모든 플레이어의 스텟 초기화
 function rpp_ResetAllPlayerStat():
@@ -11,15 +25,15 @@ function rpp_ResetAllPlayerStat():
 #플레이어 스텟 초기화
 function rpp_ResetPlayerStat(p:offlineplayer):
 	send "&e[RPG-Pack] 플레이어 &%{_p}%&e의 스텟 정보 초기화를 진행합니다.." to console
-	set {_level} to rpp_GetPlayerLevel({_p})
-	set {_levelUpPoint} to rpp_GetLevelUpPoint()
-	set {_point} to {_level} * {_levelUpPoint}
-	rpp_SetPlayerStatPoint({_p}, {_point}) # 보유중인 스텟 포인트를 해당 레벨에 얻을 수 있는 포인트의 총 합으로 설정
-	rpp_SetPlayerStat_Sft({_p}, 0) # 신속 포인트를 투자한 스텟 초기화
+	rpp_SetPlayerStat_Sft({_p}, 0) # 포인트를 투자한 신속 스텟 초기화
 	rpp_SetPlayerStat_Ftl({_p}, 0) # 치명
 	rpp_SetPlayerStat_Ptn({_p}, 0) # 인내
 	rpp_SetPlayerStat_Skl({_p}, 0) # 숙련
 	rpp_SetPlayerStat_Spr({_p}, 0) # 제압
+	rpp_UpdatePlayerStat({_p}) # 변경된 5종 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 현재 보유가능한 스텟포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 업데이트
+	rpp_ApplyDetail({_p}) # 세부 스텟 적용
 	
 #플레이어 스텟포인트 설정
 function rpp_SetPlayerStatPoint(p:offlineplayer, stat:number):
@@ -27,17 +41,84 @@ function rpp_SetPlayerStatPoint(p:offlineplayer, stat:number):
 	set {_uuid} to uuid of {_p}
 	set {%{_id}%.PlayerStatPoint::%{_uuid}%} to {_stat}
 
-
 #플레이어 스텟포인트 반환
 function rpp_GetPlayerStatPoint(p:offlineplayer) :: number:
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
 	return {%{_id}%.PlayerStatPoint::%{_uuid}%}
 	
+#플레이어 스텟포인트 업데이트
+#플레이어의 전체 포인트에서 5종 스텟에 투자한 포인트를 제외하고 남은 포인트를 현재 포인트로 업데이트 합니다.
+function rpp_UpdatePlayerStatPoint(p:offlineplayer):
+	set {_level} to rpp_GetPlayerLevel({_p})
+	set {_levelUpPoint} to rpp_GetLevelUpPoint()
+	set {_point} to {_level} * {_levelUpPoint} # 현재 레벨에서 보유할 수 있는 포인트 로드
+	remove rpp_GetPlayerStat_Sft({_p}) from {_point} # 전체 포인트에서 신속에 투자한 포인트 제거
+	remove rpp_GetPlayerStat_Ftl({_p}) from {_point} # 전체 포인트에서 치명에 투자한 포인트 제거
+	remove rpp_GetPlayerStat_Ptn({_p}) from {_point} # 전체 포인트에서 인내에 투자한 포인트 제거
+	remove rpp_GetPlayerStat_Skl({_p}) from {_point} # 전체 포인트에서 숙련에 투자한 포인트 제거
+	remove rpp_GetPlayerStat_Spr({_p}) from {_point} # 전체 포인트에서 제압에 투자한 포인트 제거
+	rpp_SetPlayerStatPoint({_p}, {_point}) # 남은 포인트로 현재 스텟포인트 설정
+	# 남은 포인트가 0보다 작다면 경고메세지 출력
+	if {_point} < 0:
+		send "&c[RPG-Pack] 플레이어 &6%{_p}%&c 님의 스텟에 적용된 포인트가 보유 가능한 포인트보다 많습니다. /rpp.debug.ResetPlayerStat 명령어를 이용하여 스텟포인트 재설정을 진행해주세요." to console
+	
+#========================================================================================================
+
+#신속 스텟 증가
+function rpp_AddPlayerStat_Sft(p:offlineplayer, num:number):
+	set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 로드
+	rpp_SetPlayerStat_Sft({_p}, {_sft} + {_num}) # 신속 스텟 설정
+	rpp_UpdatePlayerStat_Sft({_p}) # 신속 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 보유 스텟 포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 업데이트
+	rpp_ApplyDetail({_p}) # 세부 스텟 적용
+	
+#치명 스텟 증가
+function rpp_AddPlayerStat_Ftl(p:offlineplayer, num:number):
+	set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 로드
+	rpp_SetPlayerStat_Ftl({_p}, {_sft} + {_num}) # 치명 스텟 설정
+	rpp_UpdatePlayerStat_Ftl({_p}) # 치명 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 보유 스텟 포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 업데이트
+	rpp_ApplyDetail({_p}) # 세부 스텟 적용
+	
+#인내 스텟 증가
+function rpp_AddPlayerStat_Ptn(p:offlineplayer, num:number):
+	set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 로드
+	rpp_SetPlayerStat_Ptn({_p}, {_sft} + {_num}) # 인내 스텟 설정
+	rpp_UpdatePlayerStat_Ptn({_p}) # 인내 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 보유 스텟 포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 업데이트
+	rpp_ApplyDetail({_p}) # 세부 스텟 적용
+	
+#숙련 스텟 증가
+function rpp_AddPlayerStat_Skl(p:offlineplayer, num:number):
+	set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 로드
+	rpp_SetPlayerStat_Skl({_p}, {_sft} + {_num}) # 숙련 스텟 설정
+	rpp_UpdatePlayerStat_Skl({_p}) # 숙련 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 보유 스텟 포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 업데이트
+	rpp_ApplyDetail({_p}) # 세부 스텟 적용
+	
+#제압 스텟 증가
+function rpp_AddPlayerStat_Spr(p:offlineplayer, num:number):
+	set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 로드
+	rpp_SetPlayerStat_Spr({_p}, {_sft} + {_num}) # 제압 스텟 설정
+	rpp_UpdatePlayerStat_Spr({_p}) # 제압 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 보유 스텟 포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 업데이트
+	rpp_ApplyDetail({_p}) # 세부 스텟 적용
+
+#========================================================================================================	
+	
 #스텟포인트로 상승한 플레이어 신속 스텟을 설정
 function rpp_SetPlayerStat_Sft(p:offlineplayer, stat:number):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
+	set {_max} to rpp_GetMaxUpgrade_Sft() # 신속 스텟 업그레이드 최대치 로드
+	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
+		set {_stat} to {_max}
 	set {%{_id}%.PlayerStat_Sft::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 신속 스텟을 반환
@@ -50,6 +131,9 @@ function rpp_GetPlayerStat_Sft(p:offlineplayer) :: number:
 function rpp_SetPlayerStat_Ftl(p:offlineplayer, stat:number):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
+	set {_max} to rpp_GetMaxUpgrade_Ftl() # 치명 스텟 업그레이드 최대치 로드
+	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
+		set {_stat} to {_max}
 	set {%{_id}%.PlayerStat_Ftl::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 치명 스텟을 반환
@@ -62,6 +146,9 @@ function rpp_GetPlayerStat_Ftl(p:offlineplayer) :: number:
 function rpp_SetPlayerStat_Ptn(p:offlineplayer, stat:number):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
+	set {_max} to rpp_GetMaxUpgrade_Ptn() # 인내 스텟 업그레이드 최대치 로드
+	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
+		set {_stat} to {_max}
 	set {%{_id}%.PlayerStat_Ptn::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 인내 스텟을 반환
@@ -74,6 +161,9 @@ function rpp_GetPlayerStat_Ptn(p:offlineplayer) :: number:
 function rpp_SetPlayerStat_Skl(p:offlineplayer, stat:number):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
+	set {_max} to rpp_GetMaxUpgrade_Skl() # 숙련 스텟 업그레이드 최대치 로드
+	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
+		set {_stat} to {_max}
 	set {%{_id}%.PlayerStat_Skl::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 숙련 스텟을 반환
@@ -86,6 +176,9 @@ function rpp_GetPlayerStat_Skl(p:offlineplayer) :: number:
 function rpp_SetPlayerStat_Spr(p:offlineplayer, stat:number):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
+	set {_max} to rpp_GetMaxUpgrade_Spr() # 제압 스텟 업그레이드 최대치 로드
+	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
+		set {_stat} to {_max}
 	set {%{_id}%.PlayerStat_Sp::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 제압 스텟을 반환
@@ -94,18 +187,1043 @@ function rpp_GetPlayerStat_Spr(p:offlineplayer) :: number:
 	set {_uuid} to uuid of {_p}
 	return {%{_id}%.PlayerStat_Spr::%{_uuid}%}
 
+#========================================================================================================	
+
+#플레이어 스텟 업데이트
+function rpp_UpdatePlayerStat(p:offlineplayer):
+	rpp_UpdatePlayerStat_Sft({_p}) # 신속 스텟 업데이트
+	rpp_UpdatePlayerStat_Ftl({_p}) # 치명 스텟 업데이트
+	rpp_UpdatePlayerStat_Ptn({_p}) # 인내 스텟 업데이트
+	rpp_UpdatePlayerStat_Skl({_p}) # 숙련 스텟 업데이트
+	rpp_UpdatePlayerStat_Spr({_p}) # 제압 스텟 업데이트
 
 
+#=============================================================
 
+#신속 스텟 업데이트
+function rpp_UpdatePlayerStat_Sft(p:offlineplayer):
+	rpp_SetPlayerStat_Sft_Hp({_p}) # 신속 스텟 체력 업데이트
+	rpp_SetPlayerStat_Sft_HpR({_p}) # 신속 스텟 체력 재생 업데이트
+	rpp_SetPlayerStat_Sft_Atk({_p}) # 신속 스텟 공격력 업데이트
+	rpp_SetPlayerStat_Sft_Def({_p}) # 신속 스텟 방어력 업데이트
+	rpp_SetPlayerStat_Sft_Spd({_p}) # 신속 스텟 이동속도 업데이트
+	rpp_SetPlayerStat_Sft_CrC({_p}) # 신속 스텟 치명타 확률 업데이트
+	rpp_SetPlayerStat_Sft_CrD({_p}) # 신속 스텟 치명타 데미지 업데이트
+	rpp_SetPlayerStat_Sft_DeP({_p}) # 신속 스텟 방어력 관통 업데이트
+	rpp_SetPlayerStat_Sft_CrCI({_p}) # 신속 스텟 치명타 저항 업데이트
+	rpp_SetPlayerStat_Sft_DePI({_p}) # 신속 스텟 방어력 관통 저항 업데이트
 
+#=============================================================
 
+#치명 스텟 업데이트
+function rpp_UpdatePlayerStat_Ftl(p:offlineplayer):
+	rpp_SetPlayerStat_Ftl_Hp({_p}) # 치명 스텟 체력 업데이트
+	rpp_SetPlayerStat_Ftl_HpR({_p}) # 치명 스텟 체력 재생 업데이트
+	rpp_SetPlayerStat_Ftl_Atk({_p}) # 치명 스텟 공격력 업데이트
+	rpp_SetPlayerStat_Ftl_Def({_p}) # 치명 스텟 방어력 업데이트
+	rpp_SetPlayerStat_Ftl_Spd({_p}) # 치명 스텟 이동속도 업데이트
+	rpp_SetPlayerStat_Ftl_CrC({_p}) # 치명 스텟 치명타 확률 업데이트
+	rpp_SetPlayerStat_Ftl_CrD({_p}) # 치명 스텟 치명타 데미지 업데이트
+	rpp_SetPlayerStat_Ftl_DeP({_p}) # 치명 스텟 방어력 관통 업데이트
+	rpp_SetPlayerStat_Ftl_CrCI({_p}) # 치명 스텟 치명타 저항 업데이트
+	rpp_SetPlayerStat_Ftl_DePI({_p}) # 치명 스텟 방어력 관통 저항 업데이트
 
+#=============================================================
 
+#인내 스텟 업데이트
+function rpp_UpdatePlayerStat_Ptn(p:offlineplayer):
+	rpp_SetPlayerStat_Ptn_Hp({_p}) # 인내 스텟 체력 업데이트
+	rpp_SetPlayerStat_Ptn_HpR({_p}) # 인내 스텟 체력 재생 업데이트
+	rpp_SetPlayerStat_Ptn_Atk({_p}) # 인내 스텟 공격력 업데이트
+	rpp_SetPlayerStat_Ptn_Def({_p}) # 인내 스텟 방어력 업데이트
+	rpp_SetPlayerStat_Ptn_Spd({_p}) # 인내 스텟 이동속도 업데이트
+	rpp_SetPlayerStat_Ptn_CrC({_p}) # 인내 스텟 치명타 확률 업데이트
+	rpp_SetPlayerStat_Ptn_CrD({_p}) # 인내 스텟 치명타 데미지 업데이트
+	rpp_SetPlayerStat_Ptn_DeP({_p}) # 인내 스텟 방어력 관통 업데이트
+	rpp_SetPlayerStat_Ptn_CrCI({_p}) # 인내 스텟 치명타 저항 업데이트
+	rpp_SetPlayerStat_Ptn_DePI({_p}) # 인내 스텟 방어력 관통 저항 업데이트
 
+#=============================================================
 
+#숙련 스텟 업데이트
+function rpp_UpdatePlayerStat_Skl(p:offlineplayer):
+	rpp_SetPlayerStat_Skl_Hp({_p}) # 숙련 스텟 체력 업데이트
+	rpp_SetPlayerStat_Skl_HpR({_p}) # 숙련 스텟 체력 재생 업데이트
+	rpp_SetPlayerStat_Skl_Atk({_p}) # 숙련 스텟 공격력 업데이트
+	rpp_SetPlayerStat_Skl_Def({_p}) # 숙련 스텟 방어력 업데이트
+	rpp_SetPlayerStat_Skl_Spd({_p}) # 숙련 스텟 이동속도 업데이트
+	rpp_SetPlayerStat_Skl_CrC({_p}) # 숙련 스텟 치명타 확률 업데이트
+	rpp_SetPlayerStat_Skl_CrD({_p}) # 숙련 스텟 치명타 데미지 업데이트
+	rpp_SetPlayerStat_Skl_DeP({_p}) # 숙련 스텟 방어력 관통 업데이트
+	rpp_SetPlayerStat_Skl_CrCI({_p}) # 숙련 스텟 치명타 저항 업데이트
+	rpp_SetPlayerStat_Skl_DePI({_p}) # 숙련 스텟 방어력 관통 저항 업데이트
 
+#=============================================================
 
+#제압 스텟 업데이트
+function rpp_UpdatePlayerStat_Spr(p:offlineplayer):
+	rpp_SetPlayerStat_Spr_Hp({_p}) # 제압 스텟 체력 업데이트
+	rpp_SetPlayerStat_Spr_HpR({_p}) # 제압 스텟 체력 재생 업데이트
+	rpp_SetPlayerStat_Spr_Atk({_p}) # 제압 스텟 공격력 업데이트
+	rpp_SetPlayerStat_Spr_Def({_p}) # 제압 스텟 방어력 업데이트
+	rpp_SetPlayerStat_Spr_Spd({_p}) # 제압 스텟 이동속도 업데이트
+	rpp_SetPlayerStat_Spr_CrC({_p}) # 제압 스텟 치명타 확률 업데이트
+	rpp_SetPlayerStat_Spr_CrD({_p}) # 제압 스텟 치명타 데미지 업데이트
+	rpp_SetPlayerStat_Spr_DeP({_p}) # 제압 스텟 방어력 관통 업데이트
+	rpp_SetPlayerStat_Spr_CrCI({_p}) # 제압 스텟 치명타 저항 업데이트
+	rpp_SetPlayerStat_Spr_DePI({_p}) # 제압 스텟 방어력 관통 저항 업데이트
 
+#========================================================================================================	
+
+#신속 스텟으로 상승한 플레이어의 체력 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_Hp(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_GetEff_Sft_Hp() # 신속 스텟 1당 올라가는 체력 로드
+		set {%{_id}%.PlayerStat_Sft_Hp::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 체력 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_Hp::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 체력 반환
+function rpp_GetPlayerStat_Sft_Hp(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_Hp::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 체력 재생 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_HpR(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_GetEff_Sft_HpR() # 신속 스텟 1당 올라가는 체력 재생 로드
+		set {%{_id}%.PlayerStat_Sft_HpR::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 체력 재생 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_HpR::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 체력 재생 반환
+function rpp_GetPlayerStat_Sft_HpR(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_HpR::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 공격력 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_Atk(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_Atk() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_GetEff_Sft_Atk() # 신속 스텟 1당 올라가는 공격력 로드
+		set {%{_id}%.PlayerStat_Sft_Atk::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 공격력 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_Atk::%{_uuid}%} to 0
+		
+#신속 스텟으로 상승한 플레이어의 공격력 반환
+function rpp_GetPlayerStat_Sft_Atk(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_Atk::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 방어력 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_Def(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_Def() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_GetEff_Sft_Def() # 신속 스텟 1당 올라가는 방어력 로드
+		set {%{_id}%.PlayerStat_Sft_Def::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 방어력 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_Def::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 방어력 반환
+function rpp_GetPlayerStat_Sft_Def(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_Def::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 이동속도 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_Spd(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_Spd() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Sft_Spd()) # 신속 스텟 1당 올라가는 이동속도 로드
+		set {%{_id}%.PlayerStat_Sft_Spd::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 이동속도 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_Spd::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 이동속도 반환
+function rpp_GetPlayerStat_Sft_Spd(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_Spd::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 치명타 확률 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_CrC(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_CrC() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Sft_CrC()) # 신속 스텟 1당 올라가는 치명타 확률 로드
+		set {%{_id}%.PlayerStat_Sft_CrC::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 치명타 확률 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_CrC::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 치명타 확률 반환
+function rpp_GetPlayerStat_Sft_CrC(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_CrC::%{_uuid}%}
+	
+#=============================================================
+
+#신속 스텟으로 상승한 플레이어의 치명타 데미지 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_CrD(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_CrD() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Sft_CrD()) # 신속 스텟 1당 올라가는 치명타 데미지 로드
+		set {%{_id}%.PlayerStat_Sft_CrD::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 치명타 데미지 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_CrD::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 치명타 데미지 반환
+function rpp_GetPlayerStat_Sft_CrD(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_CrD::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 방어력 관통 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_DeP(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_DeP() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Sft_DeP()) # 신속 스텟 1당 올라가는 방어력 관통 로드
+		set {%{_id}%.PlayerStat_Sft_DeP::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 방어력 관통 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_DeP::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 방어력 관통 반환
+function rpp_GetPlayerStat_Sft_DeP(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_DeP::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 치명타 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_CrCI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_CrCI() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Sft_CrCI()) # 신속 스텟 1당 올라가는 치명타 저항 로드
+		set {%{_id}%.PlayerStat_Sft_CrCI::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 치명타 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_CrCI::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 치명타 저항 반환
+function rpp_GetPlayerStat_Sft_CrCI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_CrCI::%{_uuid}%}
+	
+#=============================================================
+	
+#신속 스텟으로 상승한 플레이어의 방어력 관통 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Sft_DePI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Sft_DePI() is true:
+		set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Sft_DePI()) # 신속 스텟 1당 올라가는 방어력 관통 저항 로드
+		set {%{_id}%.PlayerStat_Sft_DePI::%{_uuid}%} to {_sft} * {_eff} # 신속 스텟으로 증가하는 방어력 관통 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Sft_DePI::%{_uuid}%} to 0
+
+#신속 스텟으로 상승한 플레이어의 방어력 관통 저항 반환
+function rpp_GetPlayerStat_Sft_DePI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Sft_DePI::%{_uuid}%}
+
+#========================================================================================================
+
+#치명 스텟으로 상승한 플레이어의 체력 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_Hp(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ftl_Hp() # 치명 스텟 1당 올라가는 체력 로드
+		set {%{_id}%.PlayerStat_Ftl_Hp::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 체력 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_Hp::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 체력 반환
+function rpp_GetPlayerStat_Ftl_Hp(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_Hp::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 체력 재생 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_HpR(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ftl_HpR() # 치명 스텟 1당 올라가는 체력 재생 로드
+		set {%{_id}%.PlayerStat_Ftl_HpR::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 체력 재생 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_HpR::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 체력 재생 반환
+function rpp_GetPlayerStat_Ftl_HpR(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_HpR::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 공격력 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_Atk(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_Atk() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ftl_Atk() # 치명 스텟 1당 올라가는 공격력 로드
+		set {%{_id}%.PlayerStat_Ftl_Atk::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 공격력 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_Atk::%{_uuid}%} to 0
+		
+#치명 스텟으로 상승한 플레이어의 공격력 반환
+function rpp_GetPlayerStat_Ftl_Atk(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_Atk::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 방어력 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_Def(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_Def() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ftl_Def() # 치명 스텟 1당 올라가는 방어력 로드
+		set {%{_id}%.PlayerStat_Ftl_Def::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 방어력 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_Def::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 방어력 반환
+function rpp_GetPlayerStat_Ftl_Def(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_Def::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 이동속도 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_Spd(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_Spd() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ftl_Spd()) # 치명 스텟 1당 올라가는 이동속도 로드
+		set {%{_id}%.PlayerStat_Ftl_Spd::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 이동속도 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_Spd::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 이동속도 반환
+function rpp_GetPlayerStat_Ftl_Spd(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_Spd::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 치명타 확률 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_CrC(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_CrC() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ftl_CrC()) # 치명 스텟 1당 올라가는 치명타 확률 로드
+		set {%{_id}%.PlayerStat_Ftl_CrC::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 치명타 확률 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_CrC::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 치명타 확률 반환
+function rpp_GetPlayerStat_Ftl_CrC(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_CrC::%{_uuid}%}
+	
+#=============================================================
+
+#치명 스텟으로 상승한 플레이어의 치명타 데미지 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_CrD(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_CrD() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ftl_CrD()) # 치명 스텟 1당 올라가는 치명타 데미지 로드
+		set {%{_id}%.PlayerStat_Ftl_CrD::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 치명타 데미지 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_CrD::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 치명타 데미지 반환
+function rpp_GetPlayerStat_Ftl_CrD(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_CrD::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 방어력 관통 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_DeP(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_DeP() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ftl_DeP()) # 치명 스텟 1당 올라가는 방어력 관통 로드
+		set {%{_id}%.PlayerStat_Ftl_DeP::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 방어력 관통 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_DeP::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 방어력 관통 반환
+function rpp_GetPlayerStat_Ftl_DeP(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_DeP::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 치명타 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_CrCI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_CrCI() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ftl_CrCI()) # 치명 스텟 1당 올라가는 치명타 저항 로드
+		set {%{_id}%.PlayerStat_Ftl_CrCI::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 치명타 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_CrCI::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 치명타 저항 반환
+function rpp_GetPlayerStat_Ftl_CrCI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_CrCI::%{_uuid}%}
+	
+#=============================================================
+	
+#치명 스텟으로 상승한 플레이어의 방어력 관통 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Ftl_DePI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ftl_DePI() is true:
+		set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ftl_DePI()) # 치명 스텟 1당 올라가는 방어력 관통 저항 로드
+		set {%{_id}%.PlayerStat_Ftl_DePI::%{_uuid}%} to {_sft} * {_eff} # 치명 스텟으로 증가하는 방어력 관통 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Ftl_DePI::%{_uuid}%} to 0
+
+#치명 스텟으로 상승한 플레이어의 방어력 관통 저항 반환
+function rpp_GetPlayerStat_Ftl_DePI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ftl_DePI::%{_uuid}%}
+
+#========================================================================================================
+
+#인내 스텟으로 상승한 플레이어의 체력 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_Hp(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ptn_Hp() # 인내 스텟 1당 올라가는 체력 로드
+		set {%{_id}%.PlayerStat_Ptn_Hp::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 체력 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_Hp::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 체력 반환
+function rpp_GetPlayerStat_Ptn_Hp(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_Hp::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 체력 재생 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_HpR(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ptn_HpR() # 인내 스텟 1당 올라가는 체력 재생 로드
+		set {%{_id}%.PlayerStat_Ptn_HpR::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 체력 재생 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_HpR::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 체력 재생 반환
+function rpp_GetPlayerStat_Ptn_HpR(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_HpR::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 공격력 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_Atk(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_Atk() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ptn_Atk() # 인내 스텟 1당 올라가는 공격력 로드
+		set {%{_id}%.PlayerStat_Ptn_Atk::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 공격력 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_Atk::%{_uuid}%} to 0
+		
+#인내 스텟으로 상승한 플레이어의 공격력 반환
+function rpp_GetPlayerStat_Ptn_Atk(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_Atk::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 방어력 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_Def(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_Def() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_GetEff_Ptn_Def() # 인내 스텟 1당 올라가는 방어력 로드
+		set {%{_id}%.PlayerStat_Ptn_Def::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 방어력 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_Def::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 방어력 반환
+function rpp_GetPlayerStat_Ptn_Def(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_Def::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 이동속도 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_Spd(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_Spd() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ptn_Spd()) # 인내 스텟 1당 올라가는 이동속도 로드
+		set {%{_id}%.PlayerStat_Ptn_Spd::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 이동속도 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_Spd::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 이동속도 반환
+function rpp_GetPlayerStat_Ptn_Spd(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_Spd::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 치명타 확률 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_CrC(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_CrC() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ptn_CrC()) # 인내 스텟 1당 올라가는 치명타 확률 로드
+		set {%{_id}%.PlayerStat_Ptn_CrC::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 치명타 확률 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_CrC::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 치명타 확률 반환
+function rpp_GetPlayerStat_Ptn_CrC(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_CrC::%{_uuid}%}
+	
+#=============================================================
+
+#인내 스텟으로 상승한 플레이어의 치명타 데미지 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_CrD(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_CrD() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ptn_CrD()) # 인내 스텟 1당 올라가는 치명타 데미지 로드
+		set {%{_id}%.PlayerStat_Ptn_CrD::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 치명타 데미지 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_CrD::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 치명타 데미지 반환
+function rpp_GetPlayerStat_Ptn_CrD(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_CrD::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 방어력 관통 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_DeP(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_DeP() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ptn_DeP()) # 인내 스텟 1당 올라가는 방어력 관통 로드
+		set {%{_id}%.PlayerStat_Ptn_DeP::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 방어력 관통 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_DeP::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 방어력 관통 반환
+function rpp_GetPlayerStat_Ptn_DeP(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_DeP::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 치명타 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_CrCI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_CrCI() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ptn_CrCI()) # 인내 스텟 1당 올라가는 치명타 저항 로드
+		set {%{_id}%.PlayerStat_Ptn_CrCI::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 치명타 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_CrCI::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 치명타 저항 반환
+function rpp_GetPlayerStat_Ptn_CrCI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_CrCI::%{_uuid}%}
+	
+#=============================================================
+	
+#인내 스텟으로 상승한 플레이어의 방어력 관통 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Ptn_DePI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Ptn_DePI() is true:
+		set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Ptn_DePI()) # 인내 스텟 1당 올라가는 방어력 관통 저항 로드
+		set {%{_id}%.PlayerStat_Ptn_DePI::%{_uuid}%} to {_sft} * {_eff} # 인내 스텟으로 증가하는 방어력 관통 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Ptn_DePI::%{_uuid}%} to 0
+
+#인내 스텟으로 상승한 플레이어의 방어력 관통 저항 반환
+function rpp_GetPlayerStat_Ptn_DePI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Ptn_DePI::%{_uuid}%}
+
+#========================================================================================================
+
+#숙련 스텟으로 상승한 플레이어의 체력 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_Hp(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_GetEff_Skl_Hp() # 숙련 스텟 1당 올라가는 체력 로드
+		set {%{_id}%.PlayerStat_Skl_Hp::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 체력 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_Hp::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 체력 반환
+function rpp_GetPlayerStat_Skl_Hp(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_Hp::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 체력 재생 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_HpR(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_GetEff_Skl_HpR() # 숙련 스텟 1당 올라가는 체력 재생 로드
+		set {%{_id}%.PlayerStat_Skl_HpR::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 체력 재생 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_HpR::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 체력 재생 반환
+function rpp_GetPlayerStat_Skl_HpR(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_HpR::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 공격력 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_Atk(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_Atk() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_GetEff_Skl_Atk() # 숙련 스텟 1당 올라가는 공격력 로드
+		set {%{_id}%.PlayerStat_Skl_Atk::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 공격력 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_Atk::%{_uuid}%} to 0
+		
+#숙련 스텟으로 상승한 플레이어의 공격력 반환
+function rpp_GetPlayerStat_Skl_Atk(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_Atk::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 방어력 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_Def(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_Def() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_GetEff_Skl_Def() # 숙련 스텟 1당 올라가는 방어력 로드
+		set {%{_id}%.PlayerStat_Skl_Def::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 방어력 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_Def::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 방어력 반환
+function rpp_GetPlayerStat_Skl_Def(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_Def::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 이동속도 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_Spd(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_Spd() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Skl_Spd()) # 숙련 스텟 1당 올라가는 이동속도 로드
+		set {%{_id}%.PlayerStat_Skl_Spd::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 이동속도 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_Spd::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 이동속도 반환
+function rpp_GetPlayerStat_Skl_Spd(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_Spd::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 치명타 확률 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_CrC(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_CrC() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Skl_CrC()) # 숙련 스텟 1당 올라가는 치명타 확률 로드
+		set {%{_id}%.PlayerStat_Skl_CrC::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 치명타 확률 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_CrC::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 치명타 확률 반환
+function rpp_GetPlayerStat_Skl_CrC(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_CrC::%{_uuid}%}
+	
+#=============================================================
+
+#숙련 스텟으로 상승한 플레이어의 치명타 데미지 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_CrD(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_CrD() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Skl_CrD()) # 숙련 스텟 1당 올라가는 치명타 데미지 로드
+		set {%{_id}%.PlayerStat_Skl_CrD::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 치명타 데미지 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_CrD::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 치명타 데미지 반환
+function rpp_GetPlayerStat_Skl_CrD(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_CrD::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 방어력 관통 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_DeP(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_DeP() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Skl_DeP()) # 숙련 스텟 1당 올라가는 방어력 관통 로드
+		set {%{_id}%.PlayerStat_Skl_DeP::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 방어력 관통 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_DeP::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 방어력 관통 반환
+function rpp_GetPlayerStat_Skl_DeP(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_DeP::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 치명타 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_CrCI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_CrCI() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Skl_CrCI()) # 숙련 스텟 1당 올라가는 치명타 저항 로드
+		set {%{_id}%.PlayerStat_Skl_CrCI::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 치명타 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_CrCI::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 치명타 저항 반환
+function rpp_GetPlayerStat_Skl_CrCI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_CrCI::%{_uuid}%}
+	
+#=============================================================
+	
+#숙련 스텟으로 상승한 플레이어의 방어력 관통 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Skl_DePI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Skl_DePI() is true:
+		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Skl_DePI()) # 숙련 스텟 1당 올라가는 방어력 관통 저항 로드
+		set {%{_id}%.PlayerStat_Skl_DePI::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 방어력 관통 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Skl_DePI::%{_uuid}%} to 0
+
+#숙련 스텟으로 상승한 플레이어의 방어력 관통 저항 반환
+function rpp_GetPlayerStat_Skl_DePI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Skl_DePI::%{_uuid}%}
+
+#========================================================================================================
+
+#제압 스텟으로 상승한 플레이어의 체력 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_Hp(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_GetEff_Spr_Hp() # 제압 스텟 1당 올라가는 체력 로드
+		set {%{_id}%.PlayerStat_Spr_Hp::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 체력 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_Hp::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 체력 반환
+function rpp_GetPlayerStat_Spr_Hp(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_Hp::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 체력 재생 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_HpR(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_HpR() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_GetEff_Spr_HpR() # 제압 스텟 1당 올라가는 체력 재생 로드
+		set {%{_id}%.PlayerStat_Spr_HpR::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 체력 재생 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_HpR::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 체력 재생 반환
+function rpp_GetPlayerStat_Spr_HpR(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_HpR::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 공격력 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_Atk(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_Atk() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_GetEff_Spr_Atk() # 제압 스텟 1당 올라가는 공격력 로드
+		set {%{_id}%.PlayerStat_Spr_Atk::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 공격력 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_Atk::%{_uuid}%} to 0
+		
+#제압 스텟으로 상승한 플레이어의 공격력 반환
+function rpp_GetPlayerStat_Spr_Atk(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_Atk::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 방어력 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_Def(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_Def() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_GetEff_Spr_Def() # 제압 스텟 1당 올라가는 방어력 로드
+		set {%{_id}%.PlayerStat_Spr_Def::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 방어력 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_Def::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 방어력 반환
+function rpp_GetPlayerStat_Spr_Def(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_Def::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 이동속도 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_Spd(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_Spd() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Spr_Spd()) # 제압 스텟 1당 올라가는 이동속도 로드
+		set {%{_id}%.PlayerStat_Spr_Spd::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 이동속도 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_Spd::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 이동속도 반환
+function rpp_GetPlayerStat_Spr_Spd(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_Spd::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 치명타 확률 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_CrC(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_CrC() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Spr_CrC()) # 제압 스텟 1당 올라가는 치명타 확률 로드
+		set {%{_id}%.PlayerStat_Spr_CrC::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 치명타 확률 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_CrC::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 치명타 확률 반환
+function rpp_GetPlayerStat_Spr_CrC(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_CrC::%{_uuid}%}
+	
+#=============================================================
+
+#제압 스텟으로 상승한 플레이어의 치명타 데미지 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_CrD(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_CrD() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Spr_CrD()) # 제압 스텟 1당 올라가는 치명타 데미지 로드
+		set {%{_id}%.PlayerStat_Spr_CrD::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 치명타 데미지 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_CrD::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 치명타 데미지 반환
+function rpp_GetPlayerStat_Spr_CrD(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_CrD::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 방어력 관통 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_DeP(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_DeP() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Spr_DeP()) # 제압 스텟 1당 올라가는 방어력 관통 로드
+		set {%{_id}%.PlayerStat_Spr_DeP::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 방어력 관통 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_DeP::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 방어력 관통 반환
+function rpp_GetPlayerStat_Spr_DeP(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_DeP::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 치명타 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_CrCI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_CrCI() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Spr_CrCI()) # 제압 스텟 1당 올라가는 치명타 저항 로드
+		set {%{_id}%.PlayerStat_Spr_CrCI::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 치명타 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_CrCI::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 치명타 저항 반환
+function rpp_GetPlayerStat_Spr_CrCI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_CrCI::%{_uuid}%}
+	
+#=============================================================
+	
+#제압 스텟으로 상승한 플레이어의 방어력 관통 저항 설정 / 업데이트
+function rpp_SetPlayerStat_Spr_DePI(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	if rpp_GetState_Spr_DePI() is true:
+		set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 값 로드
+		set {_eff} to rpp_ConvertRate(rpp_GetEff_Spr_DePI()) # 제압 스텟 1당 올라가는 방어력 관통 저항 로드
+		set {%{_id}%.PlayerStat_Spr_DePI::%{_uuid}%} to {_sft} * {_eff} # 제압 스텟으로 증가하는 방어력 관통 저항 설정
+	else:
+		set {%{_id}%.PlayerStat_Spr_DePI::%{_uuid}%} to 0
+
+#제압 스텟으로 상승한 플레이어의 방어력 관통 저항 반환
+function rpp_GetPlayerStat_Spr_DePI(p:offlineplayer) :: number:
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+	return {%{_id}%.PlayerStat_Spr_DePI::%{_uuid}%}
+
+#========================================================================================================
 
 
 

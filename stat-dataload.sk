@@ -1,4 +1,5 @@
 
+#=============================================================
 
 #스크립트 로드 시 시스템 로드
 on skript load:
@@ -6,32 +7,33 @@ on skript load:
 	#경험치 시스템 리로드
 	rpp_Reload_ExpSystem()
 	send "&a[RPG-Pack] 경험치 시스템 로드." to console
+	
+#=============================================================
 
 #플레이어 접속 시 데이터 설정
 on join:
 	
+	# 플레이어의 체력 스케일 설정
+	rpp_ApplyHpScale(player)
+	
+	#플레이어를 서버에 한번이라도 접속한 플레이어 목록에 추가합니다.
+	rpp_addPlayerToPlayerList(player)
+	
+	#접속 시간 설정
+	rpp_SetLastJoin(player)
+	send "&e[RPG-Pack] 플레이어 &6%player% &e접속" to console
+	
 	#플레이어가 최초 접속 유저인지 확인합니다.
 	if rpp_IsPlayed(player) is not true:
-	
-		#플레이어를 서버에 한번이라도 접속한 플레이어 목록에 추가합니다.
-		rpp_addPlayerToPlayerList(player)
 		
 		#최초 접속 시간 설정
 		rpp_SetFirstJoin(player)
-		rpp_SetLastJoin(player)
 		send "&e[RPG-Pack] 플레이어 &6%player% &e최초 접속" to console
 		
 		#플레이타임 데이터 생성
 		rpp_SetPlayTime(player)
-	
-	else:
-	
-		#플레이어를 서버에 한번이라도 접속한 플레이어 목록에 추가합니다.
-		rpp_addPlayerToPlayerList(player)
-		
-		#접속 시간 설정
-		rpp_SetLastJoin(player)
-		send "&e[RPG-Pack] 플레이어 &6%player% &e접속" to console
+
+#=============================================================
 	
 #플레이어 퇴장 시 데이터 설정
 on quit:
@@ -42,4 +44,26 @@ on quit:
 	
 	#플레이타임 증가
 	rpp_SetPlayTime(player)
+
+#=============================================================	
 	
+#5초당 체력 재생
+every 5 seconds:
+	loop all players:
+		rpp_ApplyHpR(loop-player)
+		
+#=============================================================
+
+#경험치 구슬 드랍 캔슬
+on xp spawn:
+	cancel event
+
+
+
+
+
+
+
+
+
+

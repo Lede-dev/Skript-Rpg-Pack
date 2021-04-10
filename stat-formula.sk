@@ -6,25 +6,192 @@
 #숙련 - Skl
 #제압 - Spr
 
+#데미지 계산식
+# a = Attacker의 방어력 관통 - Victime의 방어력 관통 저항 (a > 0)
+# b = Victim의 방어력 - ( Victim의 방어력 * a) (b > 0)
+# c = Attacker의 공격력 - b (c > 0)
+# d = Attacker의 치명타 확률 - Victime의 치명타 저항
+# e = Attacker의 치명타 데미지 증가율
+# c의 확률로 치명타가 발생한다면, 데미지는 c * e가 됨
+#
 
-#플레이어의 전체 스텟포인트를 반환
-function rpp_GetStatPoint() :: number:
-	return 1
+#========================================================================================================	
 
-#플레이어가 직접 투자한 스텟을 반환
-function rpp_GetPlayerStat(p:player, stat:string) :: number:
-	set {_id} to rpp_GetID()
-	set {_uuid} to uuid of {_p}
-	return {%{_id}%.PlayerStat.%{_uuid}%::%{_stat}%}
+# 세부 스텟 요소 적용
+function rpp_ApplyDetail(p:offlineplayer):
+	rpp_ApplyHp({_p}) # 최대 체력 적용
+	rpp_ApplySpd({_p}) # 이동속도 적용
 
-#플레이어가 직접 투자한 스텟을 설정
-function rpp_SetPlayerStat(p:player, stat:string, value:number):
-	set {_id} to rpp_GetID()
-	set {_uuid} to uuid of {_p}
-	set {%{_id}%.PlayerStat.%{_uuid}%::%{_stat}%} to {_value}
+#=============================================================
+
+# 모든 스텟 요소 업데이트
+function rpp_UpdateAll(p:offlineplayer):
+	rpp_UpdatePlayerStat({_p}) # 5대 스텟 업데이트
+	rpp_UpdatePlayerStatPoint({_p}) # 보유중인 스텟포인트 업데이트
+	rpp_UpdateDetail({_p}) # 세부 스텟 요소 업데이트
+				#장비 스텟 업데이트
 	
-#플레이어가 직접 투자한 모든 스텟을 반환
-function rpp_GetAllPlayerStat(p:player) :: numbers:
-	set {_id} to rpp_GetID()
-	set {_uuid} to uuid of {_p}
-	return {%{_id}%.PlayerStat.%{_uuid}%::*}	
+# 세부 스텟 요소만 업데이트
+function rpp_UpdateDetail(p:offlineplayer):
+	rpp_UpdateHp({_p}) # 체력 업데이트
+	rpp_UpdateHpR({_p}) # 체력재생 업데이트
+	rpp_UpdateAtk({_p}) # 공격력 업데이트
+	rpp_UpdateDef({_p}) # 방어력 업데이트
+	rpp_UpdateSpd({_p}) # 이동속도 업데이트
+
+#=============================================================	
+
+#플레이어 데미지 업데이트
+
+#=============================================================
+
+#플레이어 체력 스케일 적용
+function rpp_ApplyHpScale(p:offlineplayer):
+	set {_scale} to rpp_GetHealthScale() # 설정된 체력 스케일 로드
+	set scaled health of {_p} to {_scale}
+
+#=============================================================
+
+#플레이어 체력 업데이트
+function rpp_UpdateHp(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_max} to rpp_GetMaxHp() # 설정된 최대 체력 로드
+	set {_hp} to rpp_GetBasicHp() # 설정된 기초 체력 로드
+	add rpp_GetPlayerStat_Sft_Hp({_p}) to {_hp} # 신속 스텟으로 올라간 체력 로드
+	add rpp_GetPlayerStat_Ftl_Hp({_p}) to {_hp} # 치명 스텟으로 올라간 체력 로드
+	add rpp_GetPlayerStat_Ptn_Hp({_p}) to {_hp} # 인내 스텟으로 올라간 체력 로드
+	add rpp_GetPlayerStat_Skl_Hp({_p}) to {_hp} # 숙련 스텟으로 올라간 체력 로드
+	add rpp_GetPlayerStat_Spr_Hp({_p}) to {_hp} # 제압 스텟으로 올라간 체력 로드	
+	if {_hp} > {_max}: # 업그레이드된 체력이 설정된 최대치보다 높다면 체력 제한
+		set {_hp} to {_max}
+	set {%{_id}%.Hp::%{_uuid}%} to {_hp} 
+	
+#플레이어 체력 적용
+function rpp_ApplyHp(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid	
+	set max health of {_p} to {%{_id}%.Hp::%{_uuid}%}
+
+#=============================================================
+
+#플레이어 체력재생 업데이트
+function rpp_UpdateHpR(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_max} to rpp_GetMaxHpR() # 설정된 최대 체력재생 로드
+	set {_hpr} to rpp_GetBasicHpR() # 설정된 기초 체력재생 로드
+	add rpp_GetPlayerStat_Sft_HpR({_p}) to {_hpr} # 신속 스텟으로 올라간 체력재생 로드
+	add rpp_GetPlayerStat_Ftl_HpR({_p}) to {_hpr} # 치명 스텟으로 올라간 체력재생 로드
+	add rpp_GetPlayerStat_Ptn_HpR({_p}) to {_hpr} # 인내 스텟으로 올라간 체력재생 로드
+	add rpp_GetPlayerStat_Skl_HpR({_p}) to {_hpr} # 숙련 스텟으로 올라간 체력재생 로드
+	add rpp_GetPlayerStat_Spr_HpR({_p}) to {_hpr} # 제압 스텟으로 올라간 체력재생 로드	
+	if {_hpr} > {_max}: # 업그레이드된 체력재생이 설정된 최대치보다 높다면 체력재생 제한
+		set {_hpr} to {_max}
+	set {%{_id}%.HpR::%{_uuid}%} to {_hpr} 
+	
+#플레이어 체력 재생 적용
+function rpp_ApplyHpR(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	add {%{_id}%.HpR::%{_uuid}%} to health of {_p}
+
+#=============================================================
+
+#플레이어 공격력 업데이트
+function rpp_UpdateAtk(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_max} to rpp_GetMaxAtk() # 설정된 최대 공격력 로드
+	set {_atk} to rpp_GetBasicAtk() # 설정된 기초 공격력 로드	
+	add rpp_GetPlayerStat_Sft_Atk({_p}) to {_atk} # 신속 스텟으로 올라간 공격력 로드
+	add rpp_GetPlayerStat_Ftl_Atk({_p}) to {_atk} # 치명 스텟으로 올라간 공격력 로드
+	add rpp_GetPlayerStat_Ptn_Atk({_p}) to {_atk} # 인내 스텟으로 올라간 공격력 로드
+	add rpp_GetPlayerStat_Skl_Atk({_p}) to {_atk} # 숙련 스텟으로 올라간 공격력 로드
+	add rpp_GetPlayerStat_Spr_Atk({_p}) to {_atk} # 제압 스텟으로 올라간 공격력 로드	
+	if {_atk} > {_max}: # 업그레이드된 공격력이 설정된 최대치보다 높다면 공격력 제한
+		set {_atk} to {_max}
+	set {%{_id}%.Atk::%{_uuid}%} to {_atk}
+
+#=============================================================
+
+#플레이어 방어력 업데이트
+function rpp_UpdateDef(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_max} to rpp_GetMaxDef() # 설정된 최대 방어력 로드
+	set {_def} to rpp_GetBasicDef() # 설정된 기초 방어력 로드	
+	add rpp_GetPlayerStat_Sft_Def({_p}) to {_def} # 신속 스텟으로 올라간 방어력 로드
+	add rpp_GetPlayerStat_Ftl_Def({_p}) to {_def} # 치명 스텟으로 올라간 방어력 로드
+	add rpp_GetPlayerStat_Ptn_Def({_p}) to {_def} # 인내 스텟으로 올라간 방어력 로드
+	add rpp_GetPlayerStat_Skl_Def({_p}) to {_def} # 숙련 스텟으로 올라간 방어력 로드
+	add rpp_GetPlayerStat_Spr_Def({_p}) to {_def} # 제압 스텟으로 올라간 방어력 로드	
+	if {_def} > {_max}: # 업그레이드된 방어력이 설정된 최대치보다 높다면 방어력 제한
+		set {_def} to {_max}
+	set {%{_id}%.Def::%{_uuid}%} to {_def}
+
+#=============================================================
+
+#플레이어 이동속도 업데이트
+function rpp_UpdateSpd(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_basic} to rpp_ConvertRate(rpp_GetBasicSpd()) # 기본 이속 증가 비율
+	set {_max} to rpp_ConvertRate(rpp_GetMaxSpd()) - {_basic} # 최대치 - 기본 이속
+	add rpp_GetPlayerStat_Sft_Spd({_p}) to {_spd}
+	add rpp_GetPlayerStat_Ftl_Spd({_p}) to {_spd} 
+	add rpp_GetPlayerStat_Ptn_Spd({_p}) to {_spd} 
+	add rpp_GetPlayerStat_Skl_Spd({_p}) to {_spd} 
+	add rpp_GetPlayerStat_Spr_Spd({_p}) to {_spd} 
+	if {_spd} > {_max}: 
+		set {_spd} to {_max}
+	set {%{_id}%.Spd::%{_uuid}%} to (0.2 * {_basic}) + (0.2 * {_spd}) # 기본 이속 * 기본이속 비율 + 추가이속
+	
+#플레이어 이동속도 적용
+function rpp_ApplySpd(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set walk speed of {_p} to {%{_id}%.Spd::%{_uuid}%} 
+	set fly speed of {_p} to {%{_id}%.Spd::%{_uuid}%} 
+	
+#=============================================================
+
+#플레이어 치명타 확률 업데이트
+
+#플레이어 치명타 데미지 업데이트
+
+#플레이어 방어력 관통 업데이트
+
+#플레이어 치명타 저항 업데이트
+
+#플레이어 방어력 관통 저항 업데이트
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

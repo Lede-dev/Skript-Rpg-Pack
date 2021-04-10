@@ -23,10 +23,26 @@ function rpp_SetPlayerLevel(p:offlineplayer, level:number):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
 	set {%{_id}%.PlayerLevel::%{_uuid}%} to {_level}
-	set level of {_p} to {%{_id}%.PlayerLevel::%{_uuid}%}
+
 	
 #플레이어 레벨 반환
 function rpp_GetPlayerLevel(p:offlineplayer) :: number:
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}
 	return {%{_id}%.PlayerLevel::%{_uuid}%}
+	
+#플레이어 경험치 설정
+function rpp_SetPlayerExp(p:offlineplayer, exp:number):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}	
+
+#플레이어 경험치 반환
+
+#플레이어 레벨 및 경험치 바 설정
+function rpp_ApplyExpSystem(p:offlineplayer):
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set level of {_p} to {%{_id}%.PlayerLevel::%{_uuid}%}	# 레벨 출력 설정
+
+
+#플레이어 레벨업 / 경험치, 레벨 업데이트

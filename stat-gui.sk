@@ -4,19 +4,27 @@
 
 #========================================================================================================
 #스텟 GUI를 반환	
-	
+function rpp_GetStatGUI(p:offlineplayer) :: inventory:
+	set {_inv} to hopper inventory named rpp_StatGUI_GetTitle() # 호퍼 인벤토리 제작
+	set slot 0 of {_inv} to rpp_StatGUI_Sft_GetIcon({_p}) # 신속
+	set slot 1 of {_inv} to rpp_StatGUI_Ftl_GetIcon()
+	set slot 2 of {_inv} to rpp_StatGUI_Ptn_GetIcon()
+	set slot 3 of {_inv} to rpp_StatGUI_Skl_GetIcon()
+	set slot 4 of {_inv} to rpp_StatGUI_Spr_GetIcon()
+	return {_inv}
 	
 #=============================================================
 #스텟 GUI의 이름을 반환
 function rpp_StatGUI_GetTitle() :: string:
-	return rpp_GetStatGUI_Title()
+	set {_title} to rpp_GetStatGUI_Title()
+	return "[ %{_title}% ]"
 	
 #=============================================================	
 #스텟 GUI의 신속 스텟 아이콘을 반환
-function rpp_StatGUI_Sft_GetIcon() :: item:
+function rpp_StatGUI_Sft_GetIcon(p:offlineplayer) :: item:
 	set {_type} to rpp_StatGUI_Sft_GetIcon_GetType()
 	set {_name} to rpp_StatGUI_Sft_GetIcon_GetName()
-	set {_lore::*} to rpp_StatGUI_Sft_GetIcon_GetLore()
+	set {_lore::*} to rpp_StatGUI_Sft_GetIcon_GetLore({_p})
 	set {_icon} to {_type} named {_name}
 	set lore of {_icon} to {_lore::*}
 	return {_icon}
@@ -31,30 +39,40 @@ function rpp_StatGUI_Sft_GetIcon_GetName() :: string:
 	return "%{_name}% [ &b$신속$ &e]" #플레이어의 현재 신속 값을 가져올 것
 	
 #스텟 GUI의 신속 스텟 아이콘 로어를 반환
-function rpp_StatGUI_Sft_GetIcon_GetLore() :: strings:
+function rpp_StatGUI_Sft_GetIcon_GetLore(p:offlineplayer) :: strings:
 	add " " to {_lore::*}
 	add "&6=================================" to {_lore::*}
 	add " " to {_lore::*}
 	if rpp_GetState_Sft_Hp(): # 신속 스텟 체력 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
+		set {_hp} to rpp_GetPlayerStat_Sft_Hp({_p})
+		add "   &f신속 스텟으로 &3%{_hp}%&f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
 	if rpp_GetState_Sft_HpR(): # 신속 스텟 체력 재생 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+		set {_hpr} to rpp_GetPlayerStat_Sft_HpR({_p})
+		add "   &f신속 스텟으로 &3%{_hpr}%&f만큼의 체력 재생이 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_Atk(): # 신속 스텟 공격력 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
+		set {_atk} to rpp_GetPlayerStat_Sft_Atk({_p})
+		add "   &f신속 스텟으로 &3%{_atk}%&f만큼의 공격력이 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_Def(): # 신속 스텟 방어력 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
+		set {_def} to rpp_GetPlayerStat_Sft_Def({_p})
+		add "   &f신속 스텟으로 &3%{_def}%&f만큼의 방어력이 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_Spd(): # 신속 스텟 이동속도 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
+		set {_spd} to rpp_GetPlayerStat_Sft_Spd({_p})
+		add "   &f신속 스텟으로 &3%{_spd}%&f만큼의 이동속도가 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_CrC(): # 신속 스텟 치명타 확률 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+		set {_crc} to rpp_GetPlayerStat_Sft_CrC({_p})
+		add "   &f신속 스텟으로 &3%{_crc}%&f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_CrD(): # 신속 스텟 치명타 데미지 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
+		set {_crd} to rpp_GetPlayerStat_Sft_CrD({_p})
+		add "   &f신속 스텟으로 &3%{_crd}%&f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_DeP(): # 신속 스텟 방어력 관통 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+		set {_dep} to rpp_GetPlayerStat_Sft_DeP({_p})
+		add "   &f신속 스텟으로 &3%{_dep}%&f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_CrCI(): # 신속 스텟 치명타 저항 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+		set {_crci} to rpp_GetPlayerStat_Sft_CrCI({_p})
+		add "   &f신속 스텟으로 &3%{_crci}%&f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
 	if rpp_GetState_Sft_DePI(): # 신속 스텟 방어력 관통 저항 증가 상태가 true 일 때
-		add "   &f신속 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+		set {_depi} to rpp_GetPlayerStat_Sft_DePI({_p})
+		add "   &f신속 스텟으로 &3%{_depi}%&f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
 	add " " to {_lore::*}
 	add "&6=================================" to {_lore::*}
 	add " " to {_lore::*}
