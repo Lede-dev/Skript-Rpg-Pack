@@ -10,9 +10,6 @@ function rpp_ConvertRateToPercent(rate:number) :: number:
 function rpp_ConvertCalRateToPercent(rate:number) :: number:
 	return {_rate} * 100
 	
-function rpp_ReconverionRate(rate:number) :: number:
-	return {_rate} * 10000
-	
 #계산식에 사용한 확률을 %확률로 반환
 
 #Date 정보를 읽을 수 있도록 변환

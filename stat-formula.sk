@@ -57,44 +57,6 @@ function rpp_UpdateDetail(p:offlineplayer):
 #=============================================================	
 
 #플레이어 데미지 업데이트
-function rpp_UpdateDamage(attacker:offlineplayer, victim:entity) :: number:
-	set {_attacker.atk} to rpp_GetAtk({_attacker}) # 가해자 공격력
-	set {_attacker.crc} to rpp_GetCrC({_attacker}) # 가해자 치명타 확률
-	set {_attacker.crd} to rpp_GetCrD({_attacker}) # 가해자 치명타 데미지
-	set {_attacker.dep} to rpp_GetDeP({_attacker}) # 가해자 방어력 관통
-	
-	set {_victim.def} to rpp_GetDef({_victim}) # 피해자 방어력
-	set {_victim.depi} to rpp_GetDePI({_victim}) # 피해자 방어력 관통 저항
-	set {_victim.crci} to rpp_GetCrCI({_victim}) # 피해자 치명타 저항
-
-	#방어력 관통 계산
-	set {_cal.dep} to {_attacker.dep} - {_victim.depi}
-	if {_cal.dep} < 0:
-		set {_cal.dep} to 0
-	
-	#방어력 계산
-	set {_cal.def} to {_victim.def} - ({_victim.def} * {_cal.dep})
-	if {_cal.def} < 0:
-		set {_cal.def} to 0
-	
-	#공격력 계산
-	set {_cal.atk} to {_attacker.atk} - {_cal.def}
-	if {_cal.atk} <= 0:
-		return 0
-		
-	#치명타 계산
-	set {_cal.crc} to {_attacker.crc} - {_victim.crci}
-	if {_cal.crc} <= 0:
-		return {_cal.atk}
-				
-	#치명타 발동 계산
-	set {_crc} to rpp_ReconverionRate({_cal.crc})
-	set {_r} to random integer between 1 and 10000
-	if {_r} > {_crc}:
-		return {_cal.atk}
-	
-	#치명타 데미지 계산
-	return {_cal.atk} * {_attacker.crd}
 
 #=============================================================
 
@@ -125,12 +87,6 @@ function rpp_ApplyHp(p:offlineplayer):
 	set {_id} to rpp_GetID() # ID
 	set {_uuid} to uuid of {_p} # uuid	
 	set max health of {_p} to {%{_id}%.Hp::%{_uuid}%}
-	
-#플레이어 체력 반환
-function rpp_GetHp(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.Hp::%{_uuid}%}	
 
 #=============================================================
 
@@ -154,12 +110,6 @@ function rpp_ApplyHpR(p:offlineplayer):
 	set {_id} to rpp_GetID() # ID
 	set {_uuid} to uuid of {_p} # uuid
 	add {%{_id}%.HpR::%{_uuid}%} to health of {_p}
-	
-#플레이어 체력재생 반환
-function rpp_GetHpR(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.HpR::%{_uuid}%}	
 
 #=============================================================
 
@@ -177,12 +127,6 @@ function rpp_UpdateAtk(p:offlineplayer):
 	if {_atk} > {_max}: # 업그레이드된 공격력이 설정된 최대치보다 높다면 공격력 제한
 		set {_atk} to {_max}
 	set {%{_id}%.Atk::%{_uuid}%} to {_atk}
-	
-#플레이어 공격력 반환
-function rpp_GetAtk(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.Atk::%{_uuid}%}
 
 #=============================================================
 
@@ -200,12 +144,6 @@ function rpp_UpdateDef(p:offlineplayer):
 	if {_def} > {_max}: # 업그레이드된 방어력이 설정된 최대치보다 높다면 방어력 제한
 		set {_def} to {_max}
 	set {%{_id}%.Def::%{_uuid}%} to {_def}
-	
-#플레이어 방어력 반환
-function rpp_GetDef(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.Def::%{_uuid}%}	
 
 #=============================================================
 
@@ -231,12 +169,6 @@ function rpp_ApplySpd(p:offlineplayer):
 	set walk speed of {_p} to {%{_id}%.Spd::%{_uuid}%} 
 	set fly speed of {_p} to {%{_id}%.Spd::%{_uuid}%} 
 	
-#플레이어 이동속도 반환
-function rpp_GetSpd(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.Spd::%{_uuid}%}	
-	
 #=============================================================
 
 #플레이어 치명타 확률 업데이트
@@ -253,12 +185,6 @@ function rpp_UpdateCrC(p:offlineplayer):
 	if {_crc} > {_max}: 
 		set {_crc} to {_max}
 	set {%{_id}%.CrC::%{_uuid}%} to {_crc}
-	
-#플레이어 치명타 확률 반환
-function rpp_GetCrC(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.CrC::%{_uuid}%}		
 	
 #=============================================================
 
@@ -277,12 +203,6 @@ function rpp_UpdateCrD(p:offlineplayer):
 		set {_crd} to {_max}
 	set {%{_id}%.CrD::%{_uuid}%} to {_crd}
 	
-#플레이어 치명타 데미지 반환
-function rpp_GetCrD(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.CrD::%{_uuid}%}	
-	
 #=============================================================
 
 #플레이어 방어력 관통 업데이트
@@ -299,12 +219,6 @@ function rpp_UpdateDeP(p:offlineplayer):
 	if {_dep} > {_max}: 
 		set {_dep} to {_max}
 	set {%{_id}%.DeP::%{_uuid}%} to {_dep}
-	
-#플레이어 방어력 관통 반환
-function rpp_GetDeP(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.DeP::%{_uuid}%}	
 	
 #=============================================================
 
@@ -323,12 +237,6 @@ function rpp_UpdateCrCI(p:offlineplayer):
 		set {_crci} to {_max}
 	set {%{_id}%.CrCI::%{_uuid}%} to {_crci}
 	
-#플레이어 치명타 저항 반환
-function rpp_GetCrCI(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.CrCI::%{_uuid}%}	
-	
 #=============================================================
 
 #플레이어 방어력 관통 저항 업데이트
@@ -345,12 +253,6 @@ function rpp_UpdateDePI(p:offlineplayer):
 	if {_depi} > {_max}: 
 		set {_depi} to {_max}
 	set {%{_id}%.DePI::%{_uuid}%} to {_depi}
-	
-#플레이어 방어력 관통 저항 반환
-function rpp_GetDePI(p:offlineplayer) :: number:
-	set {_id} to rpp_GetID() # ID
-	set {_uuid} to uuid of {_p} # uuid	
-	return {%{_id}%.DePI::%{_uuid}%}	
 	
 #=============================================================
 

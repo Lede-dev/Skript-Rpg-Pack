@@ -116,36 +116,6 @@ on right click:
 		rpp_RunExp(player, {_exp}) # 경험치 지급
 		rpp_UpdatePlayerStatPoint(player) # 스텟포인트 업데이트
 
-#=============================================================
-
-#공격 시 데미지 설정
-on damage:
-	if attacker is player:
-		set damage to rpp_UpdateDamage(attacker, victim)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
