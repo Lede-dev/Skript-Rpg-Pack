@@ -85,17 +85,46 @@ command /rpp.debug.UpdatePlayerStat:
 	permission: rpp.command.debug
 	trigger:
 		send "&e플레이어가 직접 투자한 스텟을 세부스텟 증가 비율에 맞춰 재설정합니다."
-
+		rpp_UpdateAll(player)
+		rpp_ApplyAll(player)
+		
+#플레이어를 최초 접속 상태로 전환
+command /rpp.debug.FirstJoin:
+	permission: rpp.command.debug
+	trigger:
+		send "&e최초 접속 기록을 삭제하였습니다."
+		rpp_RemoveFirstJoin(player)
 
 #========================================================================================================
 
 #스텟 GUI를 플레이어에게 오픈합니다.
 command /rpp.user.PlayerStat:
 	permission: rpp.command.user
-	aliases: 스텟, 스텟창, tmxpt, tmxptckd
+	aliases: 스텟, 스텟창, tmxpt, tmxptckd, stat
 	trigger:
 		set {_inv} to rpp_GetStatGUI(player)
 		open {_inv} to player
+		
+#========================================================================================================
+
+#경험치북을 생성합니다.
+command /rpp.util.expbook [<number>]:
+	permission: rpp.command.util
+	trigger:
+		set {_book} to book named "경험치북"
+		set line 1 of lore of {_book} to "%arg 1%"
+		add {_book} to inventory of player
+		
+#========================================================================================================
+command /rpp.emiji.ez:
+	permission: rpp.command.emoji
+	trigger:
+		broadcast "░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+		broadcast "░░░█▀▀▀░█▀▀█░░█▀▀░▀▀█░░█░░"
+		broadcast "░░░▀▀▀█░█░░█░░█▀▀░▄▀░░░▀░░"
+		broadcast "░░░▀▀▀▀░▀▀▀▀░░▀▀▀░▀▀▀░░▀░░"
+		broadcast "░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+		broadcast "⎛⎝(•‿•)⎠⎞⎛⎝(•‿•)⎠⎞⎛⎝(•‿•)⎠⎞⎛⎝(•‿•)⎠⎞"
 
 
 

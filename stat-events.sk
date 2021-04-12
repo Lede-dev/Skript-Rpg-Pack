@@ -1,0 +1,122 @@
+
+#=============================================================
+
+#스크립트 로드 시 시스템 로드
+on skript load:
+
+	#경험치 시스템 리로드
+	rpp_Reload_ExpSystem()
+	send "&a[RPG-Pack] 경험치 시스템 로드." to console
+	
+#=============================================================
+
+#플레이어 접속 시 데이터 설정
+on join:
+	
+	# 플레이어의 스텟 업데이트
+	rpp_Refresh(player)
+	
+	#플레이어를 서버에 한번이라도 접속한 플레이어 목록에 추가합니다.
+	rpp_addPlayerToPlayerList(player)
+	
+	#접속 시간 설정
+	rpp_SetLastJoin(player)
+	send "&e[RPG-Pack] 플레이어 &6%player% &e접속" to console
+	
+	#플레이어가 최초 접속 유저인지 확인합니다.
+	if rpp_IsPlayed(player) is false:
+		
+		#최초 접속 시간 설정
+		rpp_SetFirstJoin(player)
+		send "&e[RPG-Pack] 플레이어 &6%player% &e최초 접속" to console
+		
+		#플레이타임 데이터 생성
+		rpp_SetPlayTime(player)
+		
+		#플레이어 레벨, 경험치 데이터 생성
+		rpp_InitExp(player)
+		
+		#최초 접속 시 플레이어 스텟 초기화
+		rpp_ResetPlayerStat(player)
+
+#=============================================================
+	
+#플레이어 퇴장 시 데이터 설정
+on quit:
+	
+	#플레이어 퇴장 시간 설정
+	rpp_SetQuit(player)
+	send "&e[RPG-Pack] 플레이어 &6%player% &e퇴장" to console
+	
+	#플레이타임 증가
+	rpp_SetPlayTime(player)
+
+#=============================================================	
+	
+#5초당 체력 재생
+every 5 seconds:
+	loop all players:
+		rpp_ApplyHpR(loop-player)
+		
+#=============================================================
+
+#경험치 구슬 드랍 캔슬
+on xp spawn:
+	cancel event
+	
+#=============================================================
+
+#스텟 업그레이드
+on inventory click:
+	if name of event-inventory contains rpp_GetStatGUI_Title(): # 클릭한 인벤토리가 스킬창일 때
+		cancel event
+		set {_itemName} to name of clicked item # 클릭한 아이템 이름
+		set {_point} to rpp_GetLevelUpPoint() # 1레벨당 지급받는 포인트
+		
+		if {_itemName} contains rpp_GetStatGUI_Sft_Name(): # 신속 스텟
+			if click type is left mouse button with shift: # 쉬프트 + 좌클릭
+				rpp_AddPlayerStat_Sft(player, 1) # 스텟 1 증가
+			else if click type is right mouse button with shift: # 쉬프트 + 우클릭
+				rpp_AddPlayerStat_Sft(player, {_point}) # 1렙당 지급받는 포인트만큼 증가
+				
+		else if {_itemName} contains rpp_GetStatGUI_Ftl_Name(): # 치명 스텟
+			if click type is left mouse button with shift: # 쉬프트 + 좌클릭
+				rpp_AddPlayerStat_Ftl(player, 1) # 스텟 1 증가
+			else if click type is right mouse button with shift: # 쉬프트 + 우클릭
+				rpp_AddPlayerStat_Ftl(player, {_point}) # 1렙당 지급받는 포인트만큼 증가
+				
+		else if {_itemName} contains rpp_GetStatGUI_Ptn_Name(): # 인내 스텟
+			if click type is left mouse button with shift: # 쉬프트 + 좌클릭
+				rpp_AddPlayerStat_Ptn(player, 1) # 스텟 1 증가
+			else if click type is right mouse button with shift: # 쉬프트 + 우클릭
+				rpp_AddPlayerStat_Ptn(player, {_point}) # 1렙당 지급받는 포인트만큼 증가
+				
+		else if {_itemName} contains rpp_GetStatGUI_Skl_Name(): # 숙련 스텟
+			if click type is left mouse button with shift: # 쉬프트 + 좌클릭
+				rpp_AddPlayerStat_Skl(player, 1) # 스텟 1 증가
+			else if click type is right mouse button with shift: # 쉬프트 + 우클릭
+				rpp_AddPlayerStat_Skl(player, {_point}) # 1렙당 지급받는 포인트만큼 증가
+				
+		else if {_itemName} contains rpp_GetStatGUI_Spr_Name(): # 제압 스텟
+			if click type is left mouse button with shift: # 쉬프트 + 좌클릭
+				rpp_AddPlayerStat_Spr(player, 1) # 스텟 1 증가
+			else if click type is right mouse button with shift: # 쉬프트 + 우클릭
+				rpp_AddPlayerStat_Spr(player, {_point}) # 1렙당 지급받는 포인트만큼 증가
+
+		open rpp_GetStatGUI(player) to player # 스텟창 새로고침
+
+#=============================================================
+
+#경험치북 사용
+on right click:
+	set {_tool} to tool of player
+	if name of {_tool} is "경험치북":
+		set {_exp} to line 1 of lore of {_tool} parsed as number
+		remove 1 from item amount of tool of player
+		rpp_RunExp(player, {_exp}) # 경험치 지급
+		rpp_UpdatePlayerStatPoint(player) # 스텟포인트 업데이트
+
+
+
+
+

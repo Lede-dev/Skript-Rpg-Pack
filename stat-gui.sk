@@ -5,12 +5,12 @@
 #========================================================================================================
 #스텟 GUI를 반환	
 function rpp_GetStatGUI(p:offlineplayer) :: inventory:
-	set {_inv} to hopper inventory named rpp_StatGUI_GetTitle() # 호퍼 인벤토리 제작
-	set slot 0 of {_inv} to rpp_StatGUI_Sft_GetIcon({_p}) # 신속
-	set slot 1 of {_inv} to rpp_StatGUI_Ftl_GetIcon()
-	set slot 2 of {_inv} to rpp_StatGUI_Ptn_GetIcon()
-	set slot 3 of {_inv} to rpp_StatGUI_Skl_GetIcon()
-	set slot 4 of {_inv} to rpp_StatGUI_Spr_GetIcon()
+	set {_inv} to chest with 3 row named rpp_StatGUI_GetTitle() # 호퍼 인벤토리 제작
+	set slot 11 of {_inv} to rpp_StatGUI_Sft_GetIcon({_p}) # 신속
+	set slot 12 of {_inv} to rpp_StatGUI_Ftl_GetIcon({_p})
+	set slot 13 of {_inv} to rpp_StatGUI_Ptn_GetIcon({_p})
+	set slot 14 of {_inv} to rpp_StatGUI_Skl_GetIcon({_p})
+	set slot 15 of {_inv} to rpp_StatGUI_Spr_GetIcon({_p})
 	return {_inv}
 	
 #=============================================================
@@ -36,54 +36,90 @@ function rpp_StatGUI_Sft_GetIcon_GetType() :: item:
 #스텟 GUI의 신속 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Sft_GetIcon_GetName() :: string:
 	set {_name} to rpp_GetStatGUI_Sft_Name()
-	return "%{_name}% [ &b$신속$ &e]" #플레이어의 현재 신속 값을 가져올 것
+	return "&8%{_name}%"
 	
 #스텟 GUI의 신속 스텟 아이콘 로어를 반환
 function rpp_StatGUI_Sft_GetIcon_GetLore(p:offlineplayer) :: strings:
+	set {_point} to rpp_NumberFormat(rpp_GetPlayerStatPoint({_p}), 6, "&8&l", "&b&l") # 자릿수에 맞춰 문자열로 변환하여 반환 e.g) 00127
+	set {_stat} to rpp_NumberFormat(rpp_GetPlayerStat_Sft({_p}), 6, "&8&l", "&e&l")
+	set {_levelUpStat} to rpp_GetLevelUpPoint()
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &a&l신속" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*} 
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l레벨&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &b&l남은 포인트" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_stat}%&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_point}%" to {_lore::*} 
 	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f&l※ &a&l신속 &f&l스텟으로.." to {_lore::*}
+	add " " to {_lore::*}
+	
 	if rpp_GetState_Sft_Hp(): # 신속 스텟 체력 증가 상태가 true 일 때
 		set {_hp} to rpp_GetPlayerStat_Sft_Hp({_p})
-		add "   &f신속 스텟으로 &3%{_hp}%&f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력&f&l이 &b%{_hp}% &f&l상승했습니다." to {_lore::*}
+		
 	if rpp_GetState_Sft_HpR(): # 신속 스텟 체력 재생 증가 상태가 true 일 때
 		set {_hpr} to rpp_GetPlayerStat_Sft_HpR({_p})
-		add "   &f신속 스텟으로 &3%{_hpr}%&f만큼의 체력 재생이 올랐습니다." to {_lore::*}
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력 재생&f&l이 &b%{_hpr}% &f&l상승했습니다." to {_lore::*}
+
 	if rpp_GetState_Sft_Atk(): # 신속 스텟 공격력 증가 상태가 true 일 때
 		set {_atk} to rpp_GetPlayerStat_Sft_Atk({_p})
-		add "   &f신속 스텟으로 &3%{_atk}%&f만큼의 공격력이 올랐습니다." to {_lore::*}
+		add "&f &f &f &f &f &f &f &f &f⨳ &c&l공격력&f&l이 &b%{_atk}% &f&l상승했습니다." to {_lore::*}
+
 	if rpp_GetState_Sft_Def(): # 신속 스텟 방어력 증가 상태가 true 일 때
 		set {_def} to rpp_GetPlayerStat_Sft_Def({_p})
-		add "   &f신속 스텟으로 &3%{_def}%&f만큼의 방어력이 올랐습니다." to {_lore::*}
+		add "&f &f &f &f &f &f &f &f &f⨳ &3&l방어력&f&l이 &b%{_def}% &f&l상승했습니다." to {_lore::*}
+
 	if rpp_GetState_Sft_Spd(): # 신속 스텟 이동속도 증가 상태가 true 일 때
-		set {_spd} to rpp_GetPlayerStat_Sft_Spd({_p})
-		add "   &f신속 스텟으로 &3%{_spd}%&f만큼의 이동속도가 올랐습니다." to {_lore::*}
+		set {_spd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Sft_Spd({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &a&l이동속도&f&l가 &b%{_spd}%%% &f&l상승했습니다." to {_lore::*}
+
 	if rpp_GetState_Sft_CrC(): # 신속 스텟 치명타 확률 증가 상태가 true 일 때
-		set {_crc} to rpp_GetPlayerStat_Sft_CrC({_p})
-		add "   &f신속 스텟으로 &3%{_crc}%&f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
+		set {_crc} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Sft_CrC({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 확률&f&l이 &b%{_crc}%%% &f&l상승했습니다." to {_lore::*}
+
 	if rpp_GetState_Sft_CrD(): # 신속 스텟 치명타 데미지 증가 상태가 true 일 때
-		set {_crd} to rpp_GetPlayerStat_Sft_CrD({_p})
-		add "   &f신속 스텟으로 &3%{_crd}%&f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Sft_DeP(): # 신속 스텟 방어력 관통 증가 상태가 true 일 때
-		set {_dep} to rpp_GetPlayerStat_Sft_DeP({_p})
-		add "   &f신속 스텟으로 &3%{_dep}%&f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
+		set {_crd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Sft_CrD({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 데미지&f&l가 &b%{_crd}%%% &f&l상승했습니다." to {_lore::*}
+		
 	if rpp_GetState_Sft_CrCI(): # 신속 스텟 치명타 저항 증가 상태가 true 일 때
-		set {_crci} to rpp_GetPlayerStat_Sft_CrCI({_p})
-		add "   &f신속 스텟으로 &3%{_crci}%&f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
+		set {_crci} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Sft_CrCI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 저항&f&l이 &b%{_crci}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Sft_DeP(): # 신속 스텟 방어력 관통 증가 상태가 true 일 때
+		set {_dep} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Sft_DeP({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통&f&l이 &b%{_dep}%%% &f&l상승했습니다." to {_lore::*}
+
 	if rpp_GetState_Sft_DePI(): # 신속 스텟 방어력 관통 저항 증가 상태가 true 일 때
-		set {_depi} to rpp_GetPlayerStat_Sft_DePI({_p})
-		add "   &f신속 스텟으로 &3%{_depi}%&f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+		set {_depi} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Sft_DePI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통 저항&f&l이 &b%{_depi}%%% &f&l상승했습니다." to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &c&l※ TIP!" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&6&l좌클릭&f&l으로 스텟포인트를 &b&l1&f&l상승시킬 수 있습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&3&l우클릭&f&l으로 스텟포인트를 &b&l%{_levelUpStat}%&f&l상승시킬 수 있습니다." to {_lore::*}
+	add " " to {_lore::*}
 	add " " to {_lore::*}
 	return {_lore::*}
 
 #=============================================================	
 #스텟 GUI의 치명 스텟 아이콘을 반환
-function rpp_StatGUI_Ftl_GetIcon() :: item:
+function rpp_StatGUI_Ftl_GetIcon(p:offlineplayer) :: item:
 	set {_type} to rpp_StatGUI_Ftl_GetIcon_GetType()
 	set {_name} to rpp_StatGUI_Ftl_GetIcon_GetName()
-	set {_lore::*} to rpp_StatGUI_Ftl_GetIcon_GetLore()
+	set {_lore::*} to rpp_StatGUI_Ftl_GetIcon_GetLore({_p})
 	set {_icon} to {_type} named {_name}
 	set lore of {_icon} to {_lore::*}
 	return {_icon}
@@ -95,44 +131,90 @@ function rpp_StatGUI_Ftl_GetIcon_GetType() :: item:
 #스텟 GUI의 치명 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Ftl_GetIcon_GetName() :: string:
 	set {_name} to rpp_GetStatGUI_Ftl_Name()
-	return "%{_name}% [ &b$치명$ &e]"
+	return "&8%{_name}%"
 	
 #스텟 GUI의 치명 스텟 아이콘 로어를 반환
-function rpp_StatGUI_Ftl_GetIcon_GetLore() :: strings:
+function rpp_StatGUI_Ftl_GetIcon_GetLore(p:offlineplayer) :: strings:
+	set {_point} to rpp_NumberFormat(rpp_GetPlayerStatPoint({_p}), 6, "&8&l", "&b&l") # 자릿수에 맞춰 문자열로 변환하여 반환 e.g) 00127
+	set {_stat} to rpp_NumberFormat(rpp_GetPlayerStat_Ftl({_p}), 6, "&8&l", "&e&l")
+	set {_levelUpStat} to rpp_GetLevelUpPoint()
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l치명" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*} 
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l레벨&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &b&l남은 포인트" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_stat}%&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_point}%" to {_lore::*} 
 	add " " to {_lore::*}
-	if rpp_GetState_Ftl_Hp(): # 치명 스텟 체력 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
-	if rpp_GetState_Ftl_HpR(): # 치명 스텟 체력 재생 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_Atk(): # 치명 스텟 공격력 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_Def(): # 치명 스텟 방어력 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_Spd(): # 치명 스텟 이동속도 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_CrC(): # 치명 스텟 치명타 확률 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_CrD(): # 치명 스텟 치명타 데미지 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_DeP(): # 치명 스텟 방어력 관통 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_CrCI(): # 치명 스텟 치명타 저항 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ftl_DePI(): # 치명 스텟 방어력 관통 저항 증가 상태가 true 일 때
-		add "   &f치명 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f&l※ &e&l치명 &f&l스텟으로.." to {_lore::*}
+	add " " to {_lore::*}
+	
+	if rpp_GetState_Ftl_Hp():
+		set {_hp} to rpp_GetPlayerStat_Ftl_Hp({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력&f&l이 &b%{_hp}% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Ftl_HpR():
+		set {_hpr} to rpp_GetPlayerStat_Ftl_HpR({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력 재생&f&l이 &b%{_hpr}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_Atk():
+		set {_atk} to rpp_GetPlayerStat_Ftl_Atk({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &c&l공격력&f&l이 &b%{_atk}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_Def():
+		set {_def} to rpp_GetPlayerStat_Ftl_Def({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &3&l방어력&f&l이 &b%{_def}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_Spd():
+		set {_spd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ftl_Spd({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &a&l이동속도&f&l가 &b%{_spd}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_CrC():
+		set {_crc} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ftl_CrC({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 확률&f&l이 &b%{_crc}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_CrD():
+		set {_crd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ftl_CrD({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 데미지&f&l가 &b%{_crd}%%% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Ftl_CrCI():
+		set {_crci} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ftl_CrCI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 저항&f&l이 &b%{_crci}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_DeP():
+		set {_dep} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ftl_DeP({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통&f&l이 &b%{_dep}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ftl_DePI():
+		set {_depi} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ftl_DePI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통 저항&f&l이 &b%{_depi}%%% &f&l상승했습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &c&l※ TIP!" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&6&l좌클릭&f&l으로 스텟포인트를 &b&l1&f&l상승시킬 수 있습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&3&l우클릭&f&l으로 스텟포인트를 &b&l%{_levelUpStat}%&f&l상승시킬 수 있습니다." to {_lore::*}
+	add " " to {_lore::*}
 	add " " to {_lore::*}
 	return {_lore::*}
 
 #=============================================================
 #스텟 GUI의 인내 스텟 아이콘을 반환
-function rpp_StatGUI_Ptn_GetIcon() :: item:
+function rpp_StatGUI_Ptn_GetIcon(p:offlineplayer) :: item:
 	set {_type} to rpp_StatGUI_Ptn_GetIcon_GetType()
 	set {_name} to rpp_StatGUI_Ptn_GetIcon_GetName()
-	set {_lore::*} to rpp_StatGUI_Ptn_GetIcon_GetLore()
+	set {_lore::*} to rpp_StatGUI_Ptn_GetIcon_GetLore({_p})
 	set {_icon} to {_type} named {_name}
 	set lore of {_icon} to {_lore::*}
 	return {_icon}
@@ -144,44 +226,90 @@ function rpp_StatGUI_Ptn_GetIcon_GetType() :: item:
 #스텟 GUI의 인내 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Ptn_GetIcon_GetName() :: string:
 	set {_name} to rpp_GetStatGUI_Ptn_Name()
-	return "%{_name}% [ &b$인내$ &e]"
+	return "&8%{_name}%"
 	
 #스텟 GUI의 인내 스텟 아이콘 로어를 반환
-function rpp_StatGUI_Ptn_GetIcon_GetLore() :: strings:
+function rpp_StatGUI_Ptn_GetIcon_GetLore(p:offlineplayer) :: strings:
+	set {_point} to rpp_NumberFormat(rpp_GetPlayerStatPoint({_p}), 6, "&8&l", "&b&l") # 자릿수에 맞춰 문자열로 변환하여 반환 e.g) 00127
+	set {_stat} to rpp_NumberFormat(rpp_GetPlayerStat_Ptn({_p}), 6, "&8&l", "&e&l")
+	set {_levelUpStat} to rpp_GetLevelUpPoint()
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &d&l인내" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*} 
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l레벨&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &b&l남은 포인트" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_stat}%&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_point}%" to {_lore::*} 
 	add " " to {_lore::*}
-	if rpp_GetState_Ptn_Hp(): # 인내 스텟 체력 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
-	if rpp_GetState_Ptn_HpR(): # 인내 스텟 체력 재생 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_Atk(): # 인내 스텟 공격력 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_Def(): # 인내 스텟 방어력 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_Spd(): # 인내 스텟 이동속도 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_CrC(): # 인내 스텟 치명타 확률 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_CrD(): # 인내 스텟 치명타 데미지 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_DeP(): # 인내 스텟 방어력 관통 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_CrCI(): # 인내 스텟 치명타 저항 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Ptn_DePI(): # 인내 스텟 방어력 관통 저항 증가 상태가 true 일 때
-		add "   &f인내 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f&l※ &d&l인내 &f&l스텟으로.." to {_lore::*}
+	add " " to {_lore::*}
+	
+	if rpp_GetState_Ptn_Hp():
+		set {_hp} to rpp_GetPlayerStat_Ptn_Hp({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력&f&l이 &b%{_hp}% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Ptn_HpR():
+		set {_hpr} to rpp_GetPlayerStat_Ptn_HpR({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력 재생&f&l이 &b%{_hpr}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_Atk():
+		set {_atk} to rpp_GetPlayerStat_Ptn_Atk({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &c&l공격력&f&l이 &b%{_atk}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_Def():
+		set {_def} to rpp_GetPlayerStat_Ptn_Def({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &3&l방어력&f&l이 &b%{_def}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_Spd():
+		set {_spd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ptn_Spd({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &a&l이동속도&f&l가 &b%{_spd}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_CrC():
+		set {_crc} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ptn_CrC({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 확률&f&l이 &b%{_crc}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_CrD():
+		set {_crd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ptn_CrD({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 데미지&f&l가 &b%{_crd}%%% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Ptn_CrCI():
+		set {_crci} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ptn_CrCI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 저항&f&l이 &b%{_crci}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_DeP():
+		set {_dep} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ptn_DeP({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통&f&l이 &b%{_dep}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Ptn_DePI():
+		set {_depi} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Ptn_DePI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통 저항&f&l이 &b%{_depi}%%% &f&l상승했습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &c&l※ TIP!" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&6&l좌클릭&f&l으로 스텟포인트를 &b&l1&f&l상승시킬 수 있습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&3&l우클릭&f&l으로 스텟포인트를 &b&l%{_levelUpStat}%&f&l상승시킬 수 있습니다." to {_lore::*}
+	add " " to {_lore::*}
 	add " " to {_lore::*}
 	return {_lore::*}
 
 #=============================================================	
 #스텟 GUI의 숙련 스텟 아이콘을 반환
-function rpp_StatGUI_Skl_GetIcon() :: item:
+function rpp_StatGUI_Skl_GetIcon(p:offlineplayer) :: item:
 	set {_type} to rpp_StatGUI_Skl_GetIcon_GetType()
 	set {_name} to rpp_StatGUI_Skl_GetIcon_GetName()
-	set {_lore::*} to rpp_StatGUI_Skl_GetIcon_GetLore()
+	set {_lore::*} to rpp_StatGUI_Skl_GetIcon_GetLore({_p})
 	set {_icon} to {_type} named {_name}
 	set lore of {_icon} to {_lore::*}
 	return {_icon}
@@ -193,44 +321,90 @@ function rpp_StatGUI_Skl_GetIcon_GetType() :: item:
 #스텟 GUI의 숙련 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Skl_GetIcon_GetName() :: string:
 	set {_name} to rpp_GetStatGUI_Skl_Name()
-	return "%{_name}% [ &b$숙련$ &e]"
+	return "&8%{_name}%"
 	
 #스텟 GUI의 숙련 스텟 아이콘 로어를 반환
-function rpp_StatGUI_Skl_GetIcon_GetLore() :: strings:
+function rpp_StatGUI_Skl_GetIcon_GetLore(p:offlineplayer) :: strings:
+	set {_point} to rpp_NumberFormat(rpp_GetPlayerStatPoint({_p}), 6, "&8&l", "&b&l") # 자릿수에 맞춰 문자열로 변환하여 반환 e.g) 00127
+	set {_stat} to rpp_NumberFormat(rpp_GetPlayerStat_Skl({_p}), 6, "&8&l", "&e&l")
+	set {_levelUpStat} to rpp_GetLevelUpPoint()
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &6&l숙련" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*} 
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l레벨&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &b&l남은 포인트" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_stat}%&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_point}%" to {_lore::*} 
 	add " " to {_lore::*}
-	if rpp_GetState_Skl_Hp(): # 숙련 스텟 체력 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*} # 스텟으로 적용된 체력 값을 가져올 것
-	if rpp_GetState_Skl_HpR(): # 숙련 스텟 체력 재생 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_Atk(): # 숙련 스텟 공격력 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_Def(): # 숙련 스텟 방어력 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_Spd(): # 숙련 스텟 이동속도 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_CrC(): # 숙련 스텟 치명타 확률 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_CrD(): # 숙련 스텟 치명타 데미지 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_DeP(): # 숙련 스텟 방어력 관통 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_CrCI(): # 숙련 스텟 치명타 저항 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Skl_DePI(): # 숙련 스텟 방어력 관통 저항 증가 상태가 true 일 때
-		add "   &f숙련 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f&l※ &6&l숙련 &f&l스텟으로.." to {_lore::*}
+	add " " to {_lore::*}
+	
+	if rpp_GetState_Skl_Hp():
+		set {_hp} to rpp_GetPlayerStat_Skl_Hp({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력&f&l이 &b%{_hp}% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Skl_HpR():
+		set {_hpr} to rpp_GetPlayerStat_Skl_HpR({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력 재생&f&l이 &b%{_hpr}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_Atk():
+		set {_atk} to rpp_GetPlayerStat_Skl_Atk({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &c&l공격력&f&l이 &b%{_atk}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_Def():
+		set {_def} to rpp_GetPlayerStat_Skl_Def({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &3&l방어력&f&l이 &b%{_def}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_Spd():
+		set {_spd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Skl_Spd({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &a&l이동속도&f&l가 &b%{_spd}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_CrC():
+		set {_crc} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Skl_CrC({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 확률&f&l이 &b%{_crc}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_CrD():
+		set {_crd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Skl_CrD({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 데미지&f&l가 &b%{_crd}%%% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Skl_CrCI():
+		set {_crci} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Skl_CrCI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 저항&f&l이 &b%{_crci}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_DeP():
+		set {_dep} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Skl_DeP({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통&f&l이 &b%{_dep}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Skl_DePI():
+		set {_depi} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Skl_DePI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통 저항&f&l이 &b%{_depi}%%% &f&l상승했습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &c&l※ TIP!" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&6&l좌클릭&f&l으로 스텟포인트를 &b&l1&f&l상승시킬 수 있습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&3&l우클릭&f&l으로 스텟포인트를 &b&l%{_levelUpStat}%&f&l상승시킬 수 있습니다." to {_lore::*}
+	add " " to {_lore::*}
 	add " " to {_lore::*}
 	return {_lore::*}
 
 #=============================================================	
 #스텟 GUI의 제압 스텟 아이콘을 반환
-function rpp_StatGUI_Spr_GetIcon() :: item:
+function rpp_StatGUI_Spr_GetIcon(p:offlineplayer) :: item:
 	set {_type} to rpp_StatGUI_Spr_GetIcon_GetType()
 	set {_name} to rpp_StatGUI_Spr_GetIcon_GetName()
-	set {_lore::*} to rpp_StatGUI_Spr_GetIcon_GetLore()
+	set {_lore::*} to rpp_StatGUI_Spr_GetIcon_GetLore({_p})
 	set {_icon} to {_type} named {_name}
 	set lore of {_icon} to {_lore::*}
 	return {_icon}
@@ -242,39 +416,83 @@ function rpp_StatGUI_Spr_GetIcon_GetType() :: item:
 #스텟 GUI의 제압 스텟 아이콘 이름을 반환
 function rpp_StatGUI_Spr_GetIcon_GetName() :: string:
 	set {_name} to rpp_GetStatGUI_Spr_Name()
-	return "%{_name}% [ &b$제압$ &e]"
+	return "&8%{_name}%"
 
 #스텟 GUI의 제압 스텟 아이콘 로어를 반환
-function rpp_StatGUI_Spr_GetIcon_GetLore() :: strings:
+function rpp_StatGUI_Spr_GetIcon_GetLore(p:offlineplayer) :: strings:
+	set {_point} to rpp_NumberFormat(rpp_GetPlayerStatPoint({_p}), 6, "&8&l", "&b&l") # 자릿수에 맞춰 문자열로 변환하여 반환 e.g) 00127
+	set {_stat} to rpp_NumberFormat(rpp_GetPlayerStat_Spr({_p}), 6, "&8&l", "&e&l")
+	set {_levelUpStat} to rpp_GetLevelUpPoint()
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &9&l제압" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*} 
+	add " " to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l레벨&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &b&l남은 포인트" to {_lore::*} 
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_stat}%&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &e&l%{_point}%" to {_lore::*} 
 	add " " to {_lore::*}
-	if rpp_GetState_Spr_Hp(): # 제압 스텟 체력 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$체력$ &f만큼의 체력이 올랐습니다." to {_lore::*}# 스텟으로 적용된 체력 값을 가져올 것
-	if rpp_GetState_Spr_HpR(): # 제압 스텟 체력 재생 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$체력재생$ &f만큼의 체력 재생이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_Atk(): # 제압 스텟 공격력 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$공격력$ &f만큼의 공격력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_Def(): # 제압 스텟 방어력 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$방어력$ &f만큼의 방어력이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_Spd(): # 제압 스텟 이동속도 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$이동속도$ &f만큼의 이동속도가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_CrC(): # 제압 스텟 치명타 확률 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$치명타확률$ &f만큼의 치명타 확률이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_CrD(): # 제압 스텟 치명타 데미지 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$치명타데미지$ &f만큼의 치명타 데미지가 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_DeP(): # 제압 스텟 방어력 관통 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$방어력관통$ &f만큼의 방어력 관통이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_CrCI(): # 제압 스텟 치명타 저항 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$치명타저항$ &f만큼의 치명타 저항이 올랐습니다." to {_lore::*}
-	if rpp_GetState_Spr_DePI(): # 제압 스텟 방어력 관통 저항 증가 상태가 true 일 때
-		add "   &f제압 스텟으로 &3$방어력관통저항$ &f만큼의 방어력 관통 저항이 올랐습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅┈┈∘┈˃̶༒̶˂┈∘┈┈❅•&f &f &f &f &f &f &f &f &f &f &f &f &f " to {_lore::*}
 	add " " to {_lore::*}
-	add "&6=================================" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f&l※ &9&l제압 &f&l스텟으로.." to {_lore::*}
+	add " " to {_lore::*}
+	
+	if rpp_GetState_Spr_Hp():
+		set {_hp} to rpp_GetPlayerStat_Spr_Hp({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력&f&l이 &b%{_hp}% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Spr_HpR():
+		set {_hpr} to rpp_GetPlayerStat_Spr_HpR({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &d&l체력 재생&f&l이 &b%{_hpr}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_Atk():
+		set {_atk} to rpp_GetPlayerStat_Spr_Atk({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &c&l공격력&f&l이 &b%{_atk}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_Def():
+		set {_def} to rpp_GetPlayerStat_Spr_Def({_p})
+		add "&f &f &f &f &f &f &f &f &f⨳ &3&l방어력&f&l이 &b%{_def}% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_Spd():
+		set {_spd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Spr_Spd({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &a&l이동속도&f&l가 &b%{_spd}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_CrC():
+		set {_crc} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Spr_CrC({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 확률&f&l이 &b%{_crc}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_CrD():
+		set {_crd} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Spr_CrD({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 데미지&f&l가 &b%{_crd}%%% &f&l상승했습니다." to {_lore::*}
+		
+	if rpp_GetState_Spr_CrCI():
+		set {_crci} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Spr_CrCI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &e&l치명타 저항&f&l이 &b%{_crci}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_DeP():
+		set {_dep} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Spr_DeP({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통&f&l이 &b%{_dep}%%% &f&l상승했습니다." to {_lore::*}
+
+	if rpp_GetState_Spr_DePI():
+		set {_depi} to rpp_ConvertCalRateToPercent(rpp_GetPlayerStat_Spr_DePI({_p}))
+		add "&f &f &f &f &f &f &f &f &f⨳ &9&l방어력 관통 저항&f&l이 &b%{_depi}%%% &f&l상승했습니다." to {_lore::*}
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &f &7•❅──────✧❅✦❅✧──────❅•" to {_lore::*} 
+	add " " to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &c&l※ TIP!" to {_lore::*}
+	add " " to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&6&l좌클릭&f&l으로 스텟포인트를 &b&l1&f&l상승시킬 수 있습니다." to {_lore::*}
+	add "&f &f &f &f &f &f &f &f &f⨳ &e&l쉬프트&f+&3&l우클릭&f&l으로 스텟포인트를 &b&l%{_levelUpStat}%&f&l상승시킬 수 있습니다." to {_lore::*}
+	add " " to {_lore::*}
 	add " " to {_lore::*}
 	return {_lore::*}
-
-
 
 
 

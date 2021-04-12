@@ -24,7 +24,7 @@ function rpp_ResetAllPlayerStat():
 
 #플레이어 스텟 초기화
 function rpp_ResetPlayerStat(p:offlineplayer):
-	send "&e[RPG-Pack] 플레이어 &%{_p}%&e의 스텟 정보 초기화를 진행합니다.." to console
+	send "&e[RPG-Pack] 플레이어 &6%{_p}%&e의 스텟 정보 초기화를 진행합니다.." to console
 	rpp_SetPlayerStat_Sft({_p}, 0) # 포인트를 투자한 신속 스텟 초기화
 	rpp_SetPlayerStat_Ftl({_p}, 0) # 치명
 	rpp_SetPlayerStat_Ptn({_p}, 0) # 인내
@@ -67,6 +67,9 @@ function rpp_UpdatePlayerStatPoint(p:offlineplayer):
 
 #신속 스텟 증가
 function rpp_AddPlayerStat_Sft(p:offlineplayer, num:number):
+	set {_point} to rpp_GetPlayerStatPoint({_p}) # 보유중인 스텟포인트를 로드
+	if {_point} < {_num}: # 보유중인 스텟포인트가 상승시킬 값보다 작으면 종료
+		stop
 	set {_sft} to rpp_GetPlayerStat_Sft({_p}) # 신속 스텟 로드
 	rpp_SetPlayerStat_Sft({_p}, {_sft} + {_num}) # 신속 스텟 설정
 	rpp_UpdatePlayerStat_Sft({_p}) # 신속 스텟 업데이트
@@ -76,6 +79,9 @@ function rpp_AddPlayerStat_Sft(p:offlineplayer, num:number):
 	
 #치명 스텟 증가
 function rpp_AddPlayerStat_Ftl(p:offlineplayer, num:number):
+	set {_point} to rpp_GetPlayerStatPoint({_p}) # 보유중인 스텟포인트를 로드
+	if {_point} < {_num}: # 보유중인 스텟포인트가 상승시킬 값보다 작으면 종료
+		stop
 	set {_sft} to rpp_GetPlayerStat_Ftl({_p}) # 치명 스텟 로드
 	rpp_SetPlayerStat_Ftl({_p}, {_sft} + {_num}) # 치명 스텟 설정
 	rpp_UpdatePlayerStat_Ftl({_p}) # 치명 스텟 업데이트
@@ -85,6 +91,9 @@ function rpp_AddPlayerStat_Ftl(p:offlineplayer, num:number):
 	
 #인내 스텟 증가
 function rpp_AddPlayerStat_Ptn(p:offlineplayer, num:number):
+	set {_point} to rpp_GetPlayerStatPoint({_p}) # 보유중인 스텟포인트를 로드
+	if {_point} < {_num}: # 보유중인 스텟포인트가 상승시킬 값보다 작으면 종료
+		stop
 	set {_sft} to rpp_GetPlayerStat_Ptn({_p}) # 인내 스텟 로드
 	rpp_SetPlayerStat_Ptn({_p}, {_sft} + {_num}) # 인내 스텟 설정
 	rpp_UpdatePlayerStat_Ptn({_p}) # 인내 스텟 업데이트
@@ -94,6 +103,9 @@ function rpp_AddPlayerStat_Ptn(p:offlineplayer, num:number):
 	
 #숙련 스텟 증가
 function rpp_AddPlayerStat_Skl(p:offlineplayer, num:number):
+	set {_point} to rpp_GetPlayerStatPoint({_p}) # 보유중인 스텟포인트를 로드
+	if {_point} < {_num}: # 보유중인 스텟포인트가 상승시킬 값보다 작으면 종료
+		stop
 	set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 로드
 	rpp_SetPlayerStat_Skl({_p}, {_sft} + {_num}) # 숙련 스텟 설정
 	rpp_UpdatePlayerStat_Skl({_p}) # 숙련 스텟 업데이트
@@ -103,6 +115,9 @@ function rpp_AddPlayerStat_Skl(p:offlineplayer, num:number):
 	
 #제압 스텟 증가
 function rpp_AddPlayerStat_Spr(p:offlineplayer, num:number):
+	set {_point} to rpp_GetPlayerStatPoint({_p}) # 보유중인 스텟포인트를 로드
+	if {_point} < {_num}: # 보유중인 스텟포인트가 상승시킬 값보다 작으면 종료
+		stop
 	set {_sft} to rpp_GetPlayerStat_Spr({_p}) # 제압 스텟 로드
 	rpp_SetPlayerStat_Spr({_p}, {_sft} + {_num}) # 제압 스텟 설정
 	rpp_UpdatePlayerStat_Spr({_p}) # 제압 스텟 업데이트
@@ -119,6 +134,8 @@ function rpp_SetPlayerStat_Sft(p:offlineplayer, stat:number):
 	set {_max} to rpp_GetMaxUpgrade_Sft() # 신속 스텟 업그레이드 최대치 로드
 	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
 		set {_stat} to {_max}
+	else if {_stat} < 0: #입력한 스텟이 0보다 작다면 스텟을 0으로 설정
+		set {_stat} to 0
 	set {%{_id}%.PlayerStat_Sft::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 신속 스텟을 반환
@@ -134,6 +151,8 @@ function rpp_SetPlayerStat_Ftl(p:offlineplayer, stat:number):
 	set {_max} to rpp_GetMaxUpgrade_Ftl() # 치명 스텟 업그레이드 최대치 로드
 	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
 		set {_stat} to {_max}
+	else if {_stat} < 0: #입력한 스텟이 0보다 작다면 스텟을 0으로 설정
+		set {_stat} to 0
 	set {%{_id}%.PlayerStat_Ftl::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 치명 스텟을 반환
@@ -149,6 +168,8 @@ function rpp_SetPlayerStat_Ptn(p:offlineplayer, stat:number):
 	set {_max} to rpp_GetMaxUpgrade_Ptn() # 인내 스텟 업그레이드 최대치 로드
 	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
 		set {_stat} to {_max}
+	else if {_stat} < 0: #입력한 스텟이 0보다 작다면 스텟을 0으로 설정
+		set {_stat} to 0
 	set {%{_id}%.PlayerStat_Ptn::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 인내 스텟을 반환
@@ -164,6 +185,8 @@ function rpp_SetPlayerStat_Skl(p:offlineplayer, stat:number):
 	set {_max} to rpp_GetMaxUpgrade_Skl() # 숙련 스텟 업그레이드 최대치 로드
 	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
 		set {_stat} to {_max}
+	else if {_stat} < 0: #입력한 스텟이 0보다 작다면 스텟을 0으로 설정
+		set {_stat} to 0
 	set {%{_id}%.PlayerStat_Skl::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 숙련 스텟을 반환
@@ -179,7 +202,9 @@ function rpp_SetPlayerStat_Spr(p:offlineplayer, stat:number):
 	set {_max} to rpp_GetMaxUpgrade_Spr() # 제압 스텟 업그레이드 최대치 로드
 	if {_stat} > {_max}: # 입력한 스텟이 최대치를 벗어난다면 스텟을 최대치로 설정
 		set {_stat} to {_max}
-	set {%{_id}%.PlayerStat_Sp::%{_uuid}%} to {_stat}
+	else if {_stat} < 0: #입력한 스텟이 0보다 작다면 스텟을 0으로 설정
+		set {_stat} to 0
+	set {%{_id}%.PlayerStat_Spr::%{_uuid}%} to {_stat}
 
 #스텟포인트로 상승한 플레이어 제압 스텟을 반환
 function rpp_GetPlayerStat_Spr(p:offlineplayer) :: number:

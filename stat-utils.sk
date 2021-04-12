@@ -6,6 +6,11 @@ function rpp_ConvertRate(rate:number) :: number:
 #옵션에 설정된 확률을 %확률로 변환
 function rpp_ConvertRateToPercent(rate:number) :: number:
 	return {_rate} / 100
+	
+function rpp_ConvertCalRateToPercent(rate:number) :: number:
+	return {_rate} * 100
+	
+#계산식에 사용한 확률을 %확률로 반환
 
 #Date 정보를 읽을 수 있도록 변환
 function rpp_TimeFormatted(d:date) :: string:
@@ -31,3 +36,23 @@ function rpp_Reversed(o::*:objects) :: objects:
 		set {_reversed::%loop-index%} to last element of {_copy::*}
 		remove {_reversed::%loop-index%} from {_copy::*}
 	return {_reversed::*}
+
+#숫자를 입력한 자릿수에 맞춰 숫자 앞에 0을 추가시켜 문자열로 반환, 숫자의 크기가 자릿수보다 크다면 999999 와 같이 반환, 빈칸, 실제 숫자를 표기할 색 추가
+function rpp_NumberFormat(num:number, format:integer, blank:string, color:string) :: string:
+	set {_n} to "%{_num}%"
+	set {_n::*} to {_n}  split by ""
+	set {_size} to size of {_n::*} - 1
+	set {_text} to ""
+	
+	if {_size} > {_format}:
+		loop {_format} times:
+			set {_text} to "%{_text}%%{_color}%9"
+		return {_text}
+
+	set {_loop} to {_format} - {_size}
+	loop {_loop} times:
+		set {_text} to "%{_text}%%{_blank}%0"
+	loop {_n::*}:
+		set {_text} to "%{_text}%%{_color}%%loop-value%"
+	return {_text}
+	

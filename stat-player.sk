@@ -80,10 +80,15 @@ function rpp_GetPlayTime(p:offlineplayer) :: timespan:
 function rpp_IsPlayed(p:offlineplayer) :: boolean:
 	set {_id} to rpp_GetID_U()
 	set {_uuid} to uuid of {_p}
-	if {%{_id}%.FirstJoin::%{_uuid}%} is not set:
+	if {%{_id}%.FirstJoin::%{_uuid}%} is set:
 		return true
 	return false
 
+#최초 접속 기록 삭제 // 디버그
+function rpp_RemoveFirstJoin(p:offlineplayer):
+	set {_id} to rpp_GetID_U()
+	set {_uuid} to uuid of {_p}
+	delete {%{_id}%.FirstJoin::%{_uuid}%}
 
 
 

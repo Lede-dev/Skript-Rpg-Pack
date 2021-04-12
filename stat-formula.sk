@@ -17,6 +17,16 @@
 
 #========================================================================================================	
 
+#모든 스텟을 새로고침 합니다.
+function rpp_Refresh(p:offlineplayer):
+	rpp_UpdateAll({_p})
+	rpp_ApplyAll({_p})
+
+#모든 스텟 요소를 적용합니다.
+function rpp_ApplyAll(p:offlineplayer):
+	rpp_ApplyDetail({_p})
+	rpp_ApplyHpScale({_p})
+
 # 세부 스텟 요소 적용
 function rpp_ApplyDetail(p:offlineplayer):
 	rpp_ApplyHp({_p}) # 최대 체력 적용
@@ -38,6 +48,11 @@ function rpp_UpdateDetail(p:offlineplayer):
 	rpp_UpdateAtk({_p}) # 공격력 업데이트
 	rpp_UpdateDef({_p}) # 방어력 업데이트
 	rpp_UpdateSpd({_p}) # 이동속도 업데이트
+	rpp_UpdateCrC({_p}) # 치명타 확률 업데이트
+	rpp_UpdateCrD({_p}) # 치명타 데미지 업데이트
+	rpp_UpdateDeP({_p}) # 방어력 관통 업데이트
+	rpp_UpdateCrCI({_p}) # 치명타 저항 업데이트
+	rpp_UpdateDePI({_p}) # 방어력 관통 저항 업데이트
 
 #=============================================================	
 
@@ -157,14 +172,89 @@ function rpp_ApplySpd(p:offlineplayer):
 #=============================================================
 
 #플레이어 치명타 확률 업데이트
+function rpp_UpdateCrC(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_crc} to rpp_ConvertRate(rpp_GetBasicCrC())
+	set {_max} to rpp_ConvertRate(rpp_GetMaxCrC())
+	add rpp_GetPlayerStat_Sft_CrC({_p}) to {_crc}
+	add rpp_GetPlayerStat_Ftl_CrC({_p}) to {_crc} 
+	add rpp_GetPlayerStat_Ptn_CrC({_p}) to {_crc} 
+	add rpp_GetPlayerStat_Skl_CrC({_p}) to {_crc} 
+	add rpp_GetPlayerStat_Spr_CrC({_p}) to {_crc} 
+	if {_crc} > {_max}: 
+		set {_crc} to {_max}
+	set {%{_id}%.CrC::%{_uuid}%} to {_crc}
+	
+#=============================================================
 
 #플레이어 치명타 데미지 업데이트
+function rpp_UpdateCrD(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_crd} to rpp_ConvertRate(rpp_GetBasicCrD())
+	set {_max} to rpp_ConvertRate(rpp_GetMaxCrD())
+	add rpp_GetPlayerStat_Sft_CrD({_p}) to {_crd}
+	add rpp_GetPlayerStat_Ftl_CrD({_p}) to {_crd} 
+	add rpp_GetPlayerStat_Ptn_CrD({_p}) to {_crd} 
+	add rpp_GetPlayerStat_Skl_CrD({_p}) to {_crd} 
+	add rpp_GetPlayerStat_Spr_CrD({_p}) to {_crd} 
+	if {_crd} > {_max}: 
+		set {_crd} to {_max}
+	set {%{_id}%.CrD::%{_uuid}%} to {_crd}
+	
+#=============================================================
 
 #플레이어 방어력 관통 업데이트
+function rpp_UpdateDeP(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_dep} to rpp_ConvertRate(rpp_GetBasicDeP())
+	set {_max} to rpp_ConvertRate(rpp_GetMaxDeP())
+	add rpp_GetPlayerStat_Sft_DeP({_p}) to {_dep}
+	add rpp_GetPlayerStat_Ftl_DeP({_p}) to {_dep} 
+	add rpp_GetPlayerStat_Ptn_DeP({_p}) to {_dep} 
+	add rpp_GetPlayerStat_Skl_DeP({_p}) to {_dep} 
+	add rpp_GetPlayerStat_Spr_DeP({_p}) to {_dep} 
+	if {_dep} > {_max}: 
+		set {_dep} to {_max}
+	set {%{_id}%.DeP::%{_uuid}%} to {_dep}
+	
+#=============================================================
 
 #플레이어 치명타 저항 업데이트
+function rpp_UpdateCrCI(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_crci} to rpp_ConvertRate(rpp_GetBasicCrCI())
+	set {_max} to rpp_ConvertRate(rpp_GetMaxCrCI())
+	add rpp_GetPlayerStat_Sft_CrCI({_p}) to {_crci}
+	add rpp_GetPlayerStat_Ftl_CrCI({_p}) to {_crci} 
+	add rpp_GetPlayerStat_Ptn_CrCI({_p}) to {_crci} 
+	add rpp_GetPlayerStat_Skl_CrCI({_p}) to {_crci} 
+	add rpp_GetPlayerStat_Spr_CrCI({_p}) to {_crci} 
+	if {_crci} > {_max}: 
+		set {_crci} to {_max}
+	set {%{_id}%.CrCI::%{_uuid}%} to {_crci}
+	
+#=============================================================
 
 #플레이어 방어력 관통 저항 업데이트
+function rpp_UpdateDePI(p:offlineplayer):
+	set {_id} to rpp_GetID() # ID
+	set {_uuid} to uuid of {_p} # uuid
+	set {_depi} to rpp_ConvertRate(rpp_GetBasicDePI())
+	set {_max} to rpp_ConvertRate(rpp_GetMaxDePI())
+	add rpp_GetPlayerStat_Sft_DePI({_p}) to {_depi}
+	add rpp_GetPlayerStat_Ftl_DePI({_p}) to {_depi} 
+	add rpp_GetPlayerStat_Ptn_DePI({_p}) to {_depi} 
+	add rpp_GetPlayerStat_Skl_DePI({_p}) to {_depi} 
+	add rpp_GetPlayerStat_Spr_DePI({_p}) to {_depi} 
+	if {_depi} > {_max}: 
+		set {_depi} to {_max}
+	set {%{_id}%.DePI::%{_uuid}%} to {_depi}
+	
+#=============================================================
 
 
 
