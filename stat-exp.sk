@@ -4,7 +4,7 @@ function rpp_GetVar_ExpSystem() :: numbers:
 	set {_id} to rpp_GetID_S() # 변수 DB 저장 경로 로드
 	return {%{_id}%.LevelUpExp::*}
 
-#특정 레벨 레벨압 요구 경험치 반환
+#특정 레벨 레벨업 요구 경험치 반환
 function rpp_GetNextLevelRequiredExp(level:number) :: number:
 	set {_id} to rpp_GetID_S() # 변수 DB 저장 경로 로드
 	add 1 to {_level}

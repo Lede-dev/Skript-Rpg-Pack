@@ -874,7 +874,7 @@ function rpp_GetPlayerStat_Ptn_DePI(p:offlineplayer) :: number:
 function rpp_SetPlayerStat_Skl_Hp(p:offlineplayer):
 	set {_id} to rpp_GetID()
 	set {_uuid} to uuid of {_p}	
-	if rpp_GetState_Skl_HpR() is true:
+	if rpp_GetState_Skl_Hp() is true:
 		set {_sft} to rpp_GetPlayerStat_Skl({_p}) # 숙련 스텟 값 로드
 		set {_eff} to rpp_GetEff_Skl_Hp() # 숙련 스텟 1당 올라가는 체력 로드
 		set {%{_id}%.PlayerStat_Skl_Hp::%{_uuid}%} to {_sft} * {_eff} # 숙련 스텟으로 증가하는 체력 설정
