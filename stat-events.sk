@@ -124,7 +124,24 @@ on damage:
 		set damage to rpp_UpdateDamage(attacker, victim)
 
 
-
+#환경데미지
+# fall
+# fire
+# burning
+# lava
+# posion
+# suffocation
+# lightning
+# starvation
+# wither
+# falling block
+# thorns
+# cramming
+# dryout
+# on damage:
+	# if victim is player:
+		# set {_cause} to damage cause
+		# broadcast "%{_cause}% : %damage%"
 
 
 

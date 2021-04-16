@@ -22,8 +22,8 @@ function rpp_TimeFormatted(d:date) :: string:
 #Timespan 정보를 초 단위로 반환
 function rpp_TimeFormattedToSeconds(t:timespan) :: number:
 	set {_time} to "%{_t}%"
-	replace " ", "and" and "seconds" with "" in {_time}
-	replace "days", "hours" and "minutes" with ":" in {_time}
+	replace " ", "and", "second" and "seconds" with "" in {_time}
+	replace "days", "hours", "day", "hour", "minute" and "minutes" with ":" in {_time}
 	set {_time::*} to {_time} split by ":"
 	set {_r::*} to rpp_Reversed({_time::*})
 	add round {_r::1} parsed as number to {_seconds}
