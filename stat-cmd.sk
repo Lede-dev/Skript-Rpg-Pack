@@ -94,6 +94,13 @@ command /rpp.debug.FirstJoin:
 	trigger:
 		send "&e최초 접속 기록을 삭제하였습니다."
 		rpp_RemoveFirstJoin(player)
+		
+#플레이어의 직업이 정상적으로 설정되어있는지 확인하고 비 정상적이라면 해당 플레이어의 직업을 기본 직업으로 초기화
+command /rpp.debug.UpdatePlayerJob:
+	permission: rpp.command.debug
+	trigger:
+		send "&e모든 플레이어의 직업을 점검합니다. 자세한 결과는 콘솔을 확인해주세요"
+		rpp_updateAllPlayersJob()
 
 #========================================================================================================
 
@@ -105,6 +112,14 @@ command /rpp.user.PlayerStat:
 		set {_inv} to rpp_GetStatGUI(player)
 		open {_inv} to player
 		
+#플레이어의 현재 직업을 확인합니다.
+command /rpp.user.PlayerJob:
+	permission: rpp.command.user
+	aliases: 직업, wlrdjq, job
+	trigger:
+		set {_job} to rpp_GetPlayerJob(arg 1)
+		send "&f당신의 현재 직업은 &6%{_job}%&f입니다."
+		
 #========================================================================================================
 
 #경험치북을 생성합니다.
@@ -115,6 +130,118 @@ command /rpp.util.expbook [<number>]:
 		set line 1 of lore of {_book} to "%arg 1%"
 		add {_book} to inventory of player
 		
+#직업을 추가합니다.
+command /rpp.util.addJob [<string>]:
+	permission: rpp.command.util
+	trigger:
+		if arg 1 is not set:
+			send "&c추가할 직업을 입력해주세요. /rpp.util.addJob <직업 이름>"
+			stop
+
+		if rpp_IsJobRegisted(arg 1):
+			send "&c이미 등록된 직업입니다."
+			stop
+			
+		rpp_AddJob(arg 1)
+		send "&e직업 &6%arg 1%&e을(를) &a등록&e하였습니다."
+		stop
+
+#직업을 삭제합니다.
+command /rpp.util.removeJob [<string>]:
+	permission: rpp.command.util
+	trigger:
+		if arg 1 is not set:
+			send "&c제거할 직업을 입력해주세요. /rpp.util.removeJob <직업 이름>"
+			stop
+			
+		if rpp_IsJobRegisted(arg 1) is false:
+			send "&c등록되지 않은 직업입니다."
+			stop	
+			
+		rpp_RemoveJob(arg 1)
+		send "&e직업 &6%arg 1%&e을(를) &c삭제&e하였습니다."
+		stop
+		
+#직업 목록 출력
+command /rpp.util.jobList:
+	permission: rpp.command.util
+	trigger:
+		set {_job::*} to rpp_GetJob()
+		if {_job::*} is not set:
+			send "&c등록된 직업이 존재하지 않습니다."
+			stop
+		
+		send " "
+		send "&e직업 목록"
+		loop {_job::*}:
+			send " &e- %loop-value%"
+		send " "
+
+# 기본 직업 설정
+command /rpp.util.setDefaultJob [<string>]:
+	permission: rpp.command.util
+	trigger:
+		if arg 1 is not set:
+			send "&c기본 직업으로 설정할 직업을 입력해주세요"
+			stop
+			
+		if rpp_IsJobRegisted(arg 1) is false:
+			send "&c등록되지 않은 직업입니다."
+			stop
+			
+		rpp_SetDefaultJob(arg 1)
+		send "&e직업 &6%arg 1%&e을(를) 기본 직업으로 설정하였습니다."
+		stop
+	
+# 플레이어의 직업 설정	
+command /rpp.util.SetPlayerJob [<offlineplayer>] [<string>]:
+	permission: rpp.command.util
+	trigger:
+		if arg 1 is not set:
+			send "&c직업을 설정할 플레이어를 입력해주세요"
+			stop
+		
+		if arg 2 is not set:
+			send "&c플레이어에게 설정할 직업을 입력해주세요"
+			stop
+			
+		if rpp_IsPlayed(arg 1) is false:
+			send "&c존재하지 않는 플레이어입니다."
+			stop
+			
+		if rpp_IsJobRegisted(arg 2) is false:
+			send "&c등록되지 않은 직업입니다."
+			stop			
+		
+		rpp_SetPlayerJob(arg 1, arg 2)
+		send "&e플레이어 &6%arg 1%&e의 직업을 &6%arg 2%&e로 설정하였습니다."
+		stop
+
+
+# 플레이어의 직업 확인
+command /rpp.util.GetPlayerJob [<offlineplayer>]:
+	permission: rpp.command.util
+	trigger:
+		if arg 1 is not set:
+			send "&c직업을 확인할 플레이어를 입력해주세요"
+			stop
+
+		if rpp_IsPlayed(arg 1) is false:
+			send "&c존재하지 않는 플레이어입니다."
+			stop
+		
+		set {_job} to rpp_GetPlayerJob(arg 1)
+		send "&e플레이어 &6%arg 1%&e의 직업은 &6%{_job}%&e입니다."
+		
+#직업 변경권 생성
+command /rpp.util.ChangeJobTicket [<string>]:
+	permission: rpp.command.util
+	trigger:
+		give 1 of rpp_changeJobTicket(arg 1) to player
+		send "&e아이템 지급 완료."
+		stop
+
+
 #========================================================================================================
 command /rpp.emiji.ez:
 	permission: rpp.command.emoji

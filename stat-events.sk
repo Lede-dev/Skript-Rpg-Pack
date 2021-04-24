@@ -38,6 +38,9 @@ on join:
 		
 		#최초 접속 시 플레이어 스텟 초기화
 		rpp_ResetPlayerStat(player)
+		
+		#플레이어의 직업을 기본 직업으로 설정
+		rpp_SetPlayerJobToDefault(player)
 
 #=============================================================
 	
@@ -115,6 +118,17 @@ on right click:
 		remove 1 from item amount of tool of player
 		rpp_RunExp(player, {_exp}) # 경험치 지급
 		rpp_UpdatePlayerStatPoint(player) # 스텟포인트 업데이트
+		
+#직업 변경권 사용
+	else if name of {_tool} contains "직업 변경권":
+		set {_name::*} to uncolored name of {_tool} split by ":"
+		replace all " " with "" in {_name::2}
+		if rpp_SetPlayerJob(player, {_name::2}):
+			remove 1 from item amount of tool of player
+			send "&e이제 당신은 &6%{_name::2}%&e입니다."
+			stop
+		send "&c전직할 수 없는 직업입니다."
+		stop
 
 #=============================================================
 

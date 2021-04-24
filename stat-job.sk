@@ -1,0 +1,119 @@
+
+#직업 추가
+function rpp_AddJob(job:string):
+	set {_id} to rpp_GetID_S()
+	add {_job} to {%{_id}%.JobList::*}
+
+#직업 삭제	
+function rpp_RemoveJob(job:string):
+	set {_id} to rpp_GetID_S()
+	remove {_job} from {%{_id}%.JobList::*}	
+
+#직업이 등록되어있는지 확인
+function rpp_IsJobRegisted(job:string) :: boolean:
+	set {_id} to rpp_GetID_S()
+	if {%{_id}%.JobList::*} contains {_job}:
+		return true
+	return false
+
+#직업 리스트를 반환
+function rpp_GetJob() :: strings:
+	set {_id} to rpp_GetID_S()
+	return {%{_id}%.JobList::*}
+	
+#서버의 기본 직업을 설정
+#서버에 처음 입장하는 플레이어의 직업으로 설정할 직업을 결정합니다.
+function rpp_SetDefaultJob(job:string):
+	set {_id} to rpp_GetID_S()
+	set {%{_id}%.DefaultJob} to {_job}
+	
+#서버의 기본 직업을 반환
+function rpp_GetDefaultJob() :: string:
+	set {_id} to rpp_GetID_S()
+	return {%{_id}%.DefaultJob}	
+	
+#플레이어의 직업을 기본 직업으로 설정
+function rpp_SetPlayerJobToDefault(p:offlineplayer):
+	set {_job} to rpp_GetDefaultJob()
+	set {_id} to rpp_GetID()
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerJob::%{_uuid}%} to {_job}
+	
+#플레이어의 직업을 설정
+#서버에 존재하는 직업일 경우에만 직업 설정 가능
+#존재하지 않는 직업일 경우 직업 설정 실패
+#직업 설정 실패 시 false 값 반환
+#성공 시 true 반환
+function rpp_SetPlayerJob(p:offlineplayer, job:string) :: boolean:
+	if rpp_IsJobRegisted({_job}) is false:
+		return false
+	set {_id} to rpp_GetID()	
+	set {_uuid} to uuid of {_p}
+	set {%{_id}%.PlayerJob::%{_uuid}%} to {_job}
+	return true
+	
+#플레이어의 직업을 반환
+function rpp_GetPlayerJob(p:offlineplayer) :: string:
+	set {_id} to rpp_GetID()	
+	set {_uuid} to uuid of {_p}
+	return {%{_id}%.PlayerJob::%{_uuid}%}
+	
+#직업이 정해져있지 않거나 직업 목록에 포함되어있지 않은 직업을 보유하고 있는 모든 플레이어의 직업을 기본 직업으로 업데이트
+function rpp_updateAllPlayersJob():
+	set {_players::*} to rpp_GetPlayerList()
+	set {_jobs::*} to rpp_GetJob()
+	set {_defaultJob} to rpp_GetDefaultJob()
+	
+	if {_defaultJob} is not set: # 서버의 기본 직업이 설정되어있지 않다면 종료
+		send "&c서버의 기본 직업이 설정되어있지 않아 직업 업데이트가 불가능합니다." to console
+		stop
+	
+	loop {_players::*}: # 서버에 접속한적 있는 모든 플레이어의 목록을 반환
+		set {_job} to rpp_GetPlayerJob(loop-value)
+		
+		send "&e플레이어 &6%loop-value%&e의 직업을 점검합니다.." to console
+		
+		if {_job} is not set: # 플레이어의 직업이 존재하지 않는다면 재설정
+			rpp_SetPlayerJobToDefault(loop-value)
+			send "  &c- 기본 직업으로 재설정합니다." to console
+			send " " to console
+			add 1 to {_count}
+			
+		else if {_jobs::*} do not contain {_job}: # 플레이어의 직업이 직업 목록에 존재하지 않는다면 재설정
+			rpp_SetPlayerJobToDefault(loop-value)
+			send "  &c- 기본 직업으로 재설정합니다." to console
+			send " " to console
+			add 1 to {_count}
+			
+		else:
+			send "  &a- 이상없음" to console
+			send " " to console
+		
+	set {_size} to size of {_players::*}
+	send "&e플레이어 &6%{_size}%&e명 중 &6%{_count}%&e명의 직업을 기본 직업으로 설정하였습니다." to console
+
+#직업 변경권 생성
+function rpp_changeJobTicket(job:string) :: item:
+	return enchanted book named "&f직업 변경권 : &6%{_job}%" with lore "&f아이템을 손에 들고 우클릭하여 직업을 변경합니다."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
